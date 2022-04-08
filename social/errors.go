@@ -8,9 +8,11 @@ package social
 
 type Errors interface {
 	Error() string
+	ErrorDetail() interface{}
 	Empty() bool
 	Status() int
 	ReturnErrorResponse() error
+	SetStatus(code int)
 }
 
 // RelevantError returns any non-nil http-related error if any. If the decoded apiError is non-zero
@@ -19,6 +21,7 @@ func RelevantError(httpError error, apiError Errors) error {
 	if httpError != nil {
 		return httpError
 	}
+
 	if apiError.Empty() {
 		return nil
 	}

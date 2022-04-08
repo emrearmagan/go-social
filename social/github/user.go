@@ -33,7 +33,6 @@ func (u *UserService) UserCredentials() (*User, error) {
 	user := new(User)
 	apiError := new(APIError)
 
-	err := get(u.oauth2, UserPath, user, apiError, nil)
-
+	err := u.oauth2.Get(UserPath, user, apiError, nil)
 	return user, social.CheckError(err)
 }

@@ -33,6 +33,7 @@ func (s *ShotService) DribbbleShots() (*Shots, error) {
 	shots := new(Shots)
 	apiError := new(APIError)
 
-	err := get(s.oauth2, ShotsPath, shots, apiError, nil)
+	err := s.oauth2.Get(UserPath, shots, apiError, nil)
+
 	return shots, social.CheckError(err)
 }

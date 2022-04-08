@@ -7,16 +7,13 @@ Copyright © go-social. All rights reserved.
 package reddit
 
 import (
+	"go-social/models"
 	"go-social/social/oauth/oauth2"
 )
 
 const (
-	Base = "https://oauth.reddit.com"
-
-	RefreshHost = "https://www.reddit.com"
-	RefreshPath = "/api/v1/access_token"
-
-	authorizationPrefix = "bearer " // trailing space is required
+	Base                = "https://oauth.reddit.com"
+	AuthorizationPrefix = "bearer " // trailing space is required
 )
 
 type Client struct {
@@ -26,29 +23,29 @@ type Client struct {
 // NewClient returns a new Dribbble Client.
 func NewClient(oauth *oauth2.OAuth2, userAgent string) *Client {
 	oauth = oauth.NewClient(oauth.Client().Base(Base))
+	oauth.AuthorizationPrefix = AuthorizationPrefix
 	return &Client{
 		User: newUserService(oauth.New(), userAgent),
 	}
 }
 
-func get(oauth2 *oauth2.OAuth2, path string, resp interface{}, apiError *APIError, params interface{}, userAgent string) error {
-	client := oauth2.Client().AddQuery(params).Get(path)
-
-	req, err := oauth2.AddHeader(authorizationPrefix)
+func (d *Client) GoSocialUser() (*models.SocialUser, error) {
+	u, err := d.User.UserCredentials()
 	if err != nil {
-		return err
-	}
-	req.Header.Set("User-Agent", userAgent)
-	req.Header.Set("Content-Type", "application/json")
-
-	httpResp, err := client.Do(req, resp, &apiError)
-	if httpResp != nil {
-		if code := httpResp.StatusCode; code >= 300 {
-			apiError.ErrorCode = httpResp.StatusCode
-			return apiError
-		}
+		return nil, err
 	}
 
-	//TODO: Not checking relevant error since reddit does not provide a proper error
-	return nil
+	goSocial := models.SocialUser{
+		Username:     u.Name,
+		Name:         u.Subreddit.DisplayName,
+		UserId:       u.ID,
+		Verified:     u.Verified,
+		ContentCount: int64(u.TotalKarma),
+		Following:    &u.NumFriends,
+		AvatarUrl:    u.SnoovatarImg,
+		Followers:    u.Subreddit.Subscribers,
+		Url:          "https://www.reddit.com" + u.Subreddit.URL,
+	}
+
+	return &goSocial, nil
 }

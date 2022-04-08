@@ -158,6 +158,20 @@ func (c *HttpClient) Request() (*http.Request, error) {
 	return req, err
 }
 
+// Add adds the key, value pair in Headers, appending values for existing keys
+// to the key's values. Header keys are canonicalized.
+func (c *HttpClient) Add(key, value string) *HttpClient {
+	c.header.Add(key, value)
+	return c
+}
+
+// Set sets the key, value pair in Headers, replacing existing values
+// associated with key. Header keys are canonicalized.
+func (c *HttpClient) Set(key, value string) *HttpClient {
+	c.header.Set(key, value)
+	return c
+}
+
 // addQueryStructs parses url tagged query structs using go-querystring to
 // encode them to url.Values and format them onto the url.RawQuery. Any
 // query parsing or encoding errors are returned.
@@ -199,10 +213,12 @@ func addHeaders(req *http.Request, header http.Header) {
 // If the status code of response is 204(no content), decoding is skipped.
 // Any error sending the request or decoding the response is returned.
 func (c *HttpClient) Do(req *http.Request, success interface{}, failure interface{}) (*http.Response, error) {
+	println(c.rawURL)
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return resp, err
 	}
+
 	// when err is nil, resp contains a non-nil resp.Body which must be closed
 	defer resp.Body.Close()
 

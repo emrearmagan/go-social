@@ -8,16 +8,14 @@ package github
 
 import (
 	"go-social/models"
-	"go-social/social"
 	"go-social/social/oauth/oauth2"
 	"strconv"
 	"strings"
 )
 
 const (
-	Base = "https://api.github.com/"
-
-	authorizationPrefix = "token " // trailing space is required
+	Base                = "https://api.github.com/"
+	AuthorizationPrefix = "token " // trailing space is required
 )
 
 type Client struct {
@@ -28,6 +26,7 @@ type Client struct {
 // NewClient returns a new GitHub Client.
 func NewClient(oauth *oauth2.OAuth2) *Client {
 	oauth = oauth.NewClient(oauth.Client().Base(Base))
+	oauth.AuthorizationPrefix = AuthorizationPrefix
 	return &Client{
 		User:     newUserService(oauth.New()),
 		Follower: newFollowerService(oauth.New()),
@@ -37,7 +36,7 @@ func NewClient(oauth *oauth2.OAuth2) *Client {
 func (g *Client) GoSocialUser() (*models.SocialUser, error) {
 	u, err := g.User.UserCredentials()
 	if err != nil {
-		return nil, social.CheckError(err)
+		return nil, err
 	}
 
 	pro := strings.ToLower(u.Plan.Name) == "pro"
@@ -55,22 +54,4 @@ func (g *Client) GoSocialUser() (*models.SocialUser, error) {
 	}
 
 	return &goSocial, nil
-}
-
-func get(oauth2 *oauth2.OAuth2, path string, resp interface{}, apiError *APIError, params interface{}) error {
-	client := oauth2.Client().AddQuery(params).Get(path)
-
-	req, err := oauth2.AddHeader(authorizationPrefix)
-	if err != nil {
-		return err
-	}
-
-	httpResp, err := client.Do(req, resp, &apiError.Errors)
-	if httpResp != nil {
-		if code := httpResp.StatusCode; code >= 300 {
-			apiError.StatusCode = httpResp.StatusCode
-		}
-	}
-
-	return social.RelevantError(err, apiError)
 }
