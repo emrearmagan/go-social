@@ -8,9 +8,6 @@ package config
 
 import (
 	"encoding/json"
-	"go-social/social/oauth"
-	"go-social/social/oauth/oauth1"
-	"go-social/social/oauth/oauth2"
 	"io/ioutil"
 )
 
@@ -25,18 +22,18 @@ type (
 		Tumblr   OAuth1Config `json:"tumblr"`
 	}
 
-	OAuthCredentials struct {
-		Credentials oauth.Credentials `json:"credentials"`
-	}
-
 	OAuth1Config struct {
-		Credentials oauth.Credentials `json:"credentials"`
-		Token       oauth1.Token      `json:"token"`
+		ConsumerKey    string `json:"consumer_key"`
+		ConsumerSecret string `json:"consumer_secret"`
+		Token          string `json:"access_token"`
+		TokenSecret    string `json:"token_secret"`
 	}
 
 	OAuth2Config struct {
-		Credentials oauth.Credentials `json:"credentials"`
-		Token       oauth2.Token      `json:"token"`
+		ConsumerKey    string `json:"consumer_key"`
+		ConsumerSecret string `json:"consumer_secret"`
+		Token          string `json:"access_token"`
+		RefreshToken   string `json:"refresh_token"`
 	}
 )
 

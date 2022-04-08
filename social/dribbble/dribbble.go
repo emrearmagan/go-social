@@ -7,7 +7,10 @@ Copyright © go-social. All rights reserved.
 package dribbble
 
 import (
+	"go-social/config"
+	"go-social/models"
 	"go-social/social"
+	"strconv"
 	"strings"
 )
 
@@ -43,11 +46,11 @@ func get(token string, path string, resp interface{}, apiError *APIError) error 
 
 // DribbbleShots returns all shots for the authenticated user.
 // See: https://developer.dribbble.com/v2/shots/#list-shots for more information
-func DribbbleShots(token string) (*Shots, error) {
+func DribbbleShots(config config.OAuth2Config) (*Shots, error) {
 	shots := new(Shots)
 	apiError := new(APIError)
 
-	err := get(token, ShotsPath, &shots, apiError)
+	err := get(config.Token, ShotsPath, &shots, apiError)
 	if err != nil {
 		return nil, err
 	}
@@ -57,14 +60,39 @@ func DribbbleShots(token string) (*Shots, error) {
 
 // UserCredentials returns the user credentials for the authenticated user.
 // https://developer.dribbble.com/v2/user/
-func UserCredentials(token string) (*User, error) {
+func UserCredentials(config config.OAuth2Config) (*User, error) {
 	user := new(User)
 	apiError := new(APIError)
 
-	err := get(token, UserPath, &user, apiError)
+	err := get(config.Token, UserPath, &user, apiError)
 	if err != nil {
 		return nil, err
 	}
 
 	return user, social.CheckError(err)
+}
+
+func GoSocialUser(config config.OAuth2Config) (*models.SocialUser, error) {
+	s, err := DribbbleShots(config)
+	if err != nil {
+		return nil, social.CheckError(err)
+	}
+
+	u, err := UserCredentials(config)
+	if err != nil {
+		return nil, social.CheckError(err)
+	}
+
+	goSocial := models.SocialUser{
+		Username:     u.Login,
+		Name:         u.Name,
+		UserId:       strconv.Itoa(u.ID),
+		ContentCount: int64(len(*s)),
+		Verified:     u.Pro,
+		AvatarUrl:    u.AvatarURL,
+		Followers:    u.FollowersCount,
+		Url:          u.HTMLURL,
+	}
+
+	return &goSocial, nil
 }
