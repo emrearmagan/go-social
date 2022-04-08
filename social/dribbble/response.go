@@ -62,9 +62,3 @@ type Shots []struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 	HTMLURL     string    `json:"html_url"`
 }
-
-// UserShots Simply combines the User response with the number of Shots
-type UserShots struct {
-	User          *User
-	NumberOfShots int64
-}

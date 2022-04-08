@@ -15,24 +15,38 @@ import (
 )
 
 const (
-	APIHost   = "https://api.dribbble.com/"
-	UserPath  = "/v2/user/"
-	ShotsPath = "/v2/user/shots"
+	apiHost   = "https://api.dribbble.com/"
+	userPath  = "/v2/user/"
+	shotsPath = "/v2/user/shots"
 
-	AuthorizationHeaderName = "Authorization"
+	authorizationHeaderName = "Authorization"
 	authorizationPrefix     = "Bearer " // trailing space is required
 )
 
-func get(token string, path string, resp interface{}, apiError *APIError) error {
-	client := social.NewClient().Base(APIHost).Get(path)
+type Client struct {
+	httpClient *social.HttpClient
+	Config     config.OAuth2Config
+}
+
+// NewClient returns a new Dribbble Client.
+func NewClient(config config.OAuth2Config) *Client {
+	httpClient := social.NewClient().Base(apiHost)
+	return &Client{
+		httpClient: httpClient,
+		Config:     config,
+	}
+}
+
+func (d *Client) get(path string, resp interface{}, apiError *APIError) error {
+	client := d.httpClient.Get(path)
 
 	req, err := client.Request()
 	if err != nil {
 		return err
 	}
 
-	header := []string{authorizationPrefix, token}
-	req.Header.Set(AuthorizationHeaderName, strings.Join(header, ""))
+	header := []string{authorizationPrefix, d.Config.Token}
+	req.Header.Set(authorizationHeaderName, strings.Join(header, ""))
 
 	httpResp, err := client.Do(req, resp, &apiError.Errors)
 	if httpResp != nil {
@@ -46,11 +60,11 @@ func get(token string, path string, resp interface{}, apiError *APIError) error 
 
 // DribbbleShots returns all shots for the authenticated user.
 // See: https://developer.dribbble.com/v2/shots/#list-shots for more information
-func DribbbleShots(config config.OAuth2Config) (*Shots, error) {
+func (d *Client) DribbbleShots() (*Shots, error) {
 	shots := new(Shots)
 	apiError := new(APIError)
 
-	err := get(config.Token, ShotsPath, &shots, apiError)
+	err := d.get(shotsPath, &shots, apiError)
 	if err != nil {
 		return nil, err
 	}
@@ -60,11 +74,11 @@ func DribbbleShots(config config.OAuth2Config) (*Shots, error) {
 
 // UserCredentials returns the user credentials for the authenticated user.
 // https://developer.dribbble.com/v2/user/
-func UserCredentials(config config.OAuth2Config) (*User, error) {
+func (d *Client) UserCredentials() (*User, error) {
 	user := new(User)
 	apiError := new(APIError)
 
-	err := get(config.Token, UserPath, &user, apiError)
+	err := d.get(userPath, &user, apiError)
 	if err != nil {
 		return nil, err
 	}
@@ -72,13 +86,13 @@ func UserCredentials(config config.OAuth2Config) (*User, error) {
 	return user, social.CheckError(err)
 }
 
-func GoSocialUser(config config.OAuth2Config) (*models.SocialUser, error) {
-	s, err := DribbbleShots(config)
+func (d *Client) GoSocialUser() (*models.SocialUser, error) {
+	s, err := d.DribbbleShots()
 	if err != nil {
 		return nil, social.CheckError(err)
 	}
 
-	u, err := UserCredentials(config)
+	u, err := d.UserCredentials()
 	if err != nil {
 		return nil, social.CheckError(err)
 	}

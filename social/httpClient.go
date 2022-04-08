@@ -1,5 +1,5 @@
 /*
-client.go
+httpClient.go
 Created at 08.04.22 by emrearmagan
 Copyright © go-social. All rights reserved.
 */
@@ -15,9 +15,9 @@ import (
 	"net/url"
 )
 
-// Client is an HTTP Request builder and sender.
-type Client struct {
-	// http Client for doing requests
+// HttpClient is an HTTP Request builder and sender.
+type HttpClient struct {
+	// http HttpClient for doing requests
 	httpClient *http.Client
 	// HTTP method (GET, POST, etc.)
 	method string
@@ -33,9 +33,9 @@ type Client struct {
 	responseDecoder ResponseDecoder
 }
 
-// New returns a new Sling with an http DefaultClient.
-func NewClient() *Client {
-	return &Client{
+// NewClient returns a new http client with a http DefaultClient.
+func NewClient() *HttpClient {
+	return &HttpClient{
 		httpClient:      http.DefaultClient,
 		method:          http.MethodGet,
 		header:          make(http.Header),
@@ -53,13 +53,13 @@ func NewClient() *Client {
 //
 // If pointer values are used in client, mutating the parent original parent client
 // will mutate the properties of child as well.
-func (c *Client) New() *Client {
+func (c *HttpClient) New() *HttpClient {
 	// copy Headers pairs into new Header map
 	headerCopy := make(http.Header)
 	for k, v := range c.header {
 		headerCopy[k] = v
 	}
-	return &Client{
+	return &HttpClient{
 		httpClient:      c.httpClient,
 		method:          c.method,
 		rawURL:          c.rawURL,
@@ -70,15 +70,15 @@ func (c *Client) New() *Client {
 }
 
 // Base sets the rawURL.
-func (c *Client) Base(rawURL string) *Client {
+func (c *HttpClient) Base(rawURL string) *HttpClient {
 	c.rawURL = rawURL
 	return c
 }
 
-// Body sets the Client's body.
+// Body sets the HttpClient's body.
 // If the provided body is also an io.Closer, the request Body will be closed
 // by http.Client methods.
-func (c *Client) Body(body io.Reader) *Client {
+func (c *HttpClient) Body(body io.Reader) *HttpClient {
 	if body == nil {
 		return c
 	}
@@ -89,7 +89,7 @@ func (c *Client) Body(body io.Reader) *Client {
 
 // Path extends the rawURL with the given path.
 // If parsing errors occur, the rawURL is left unmodified.
-func (c *Client) Path(path string) *Client {
+func (c *HttpClient) Path(path string) *HttpClient {
 	baseURL, baseErr := url.Parse(c.rawURL)
 	pathURL, pathErr := url.Parse(path)
 	if baseErr == nil && pathErr == nil {
@@ -99,7 +99,7 @@ func (c *Client) Path(path string) *Client {
 	return c
 }
 
-func (c *Client) AddQuery(query interface{}) *Client {
+func (c *HttpClient) AddQuery(query interface{}) *HttpClient {
 	if query != nil {
 		c.query = append(c.query, query)
 	}
@@ -107,39 +107,39 @@ func (c *Client) AddQuery(query interface{}) *Client {
 }
 
 // Get sets the Clients method to GET and sets the given pathURL.
-func (c *Client) Get(pathURL string) *Client {
+func (c *HttpClient) Get(pathURL string) *HttpClient {
 	c.method = "GET"
 	return c.Path(pathURL)
 }
 
 // Post sets the Clients method to POST and sets the given pathURL.
-func (c *Client) Post(pathURL string) *Client {
+func (c *HttpClient) Post(pathURL string) *HttpClient {
 	c.method = "POST"
 	return c.Path(pathURL)
 }
 
 // Put sets the Clients method to PUT and sets the given pathURL.
-func (c *Client) Put(pathURL string) *Client {
+func (c *HttpClient) Put(pathURL string) *HttpClient {
 	c.method = "PUT"
 	return c.Path(pathURL)
 }
 
 // Patch sets the Clients method to PATCH and sets the given pathURL.
-func (c *Client) Patch(pathURL string) *Client {
+func (c *HttpClient) Patch(pathURL string) *HttpClient {
 	c.method = "PATCH"
 	return c.Path(pathURL)
 }
 
 // Delete sets the Clients method to DELETE and sets the given pathURL.
-func (c *Client) Delete(pathURL string) *Client {
+func (c *HttpClient) Delete(pathURL string) *HttpClient {
 	c.method = "DELETE"
 	return c.Path(pathURL)
 }
 
-// Request returns a new http.Request with the Client properties.
+// Request returns a new http.Request with the HttpClient properties.
 // Returns errors if parsing the rawURL, encoding the query, encoding
 // the body, or creating the http.Request.
-func (c *Client) Request() (*http.Request, error) {
+func (c *HttpClient) Request() (*http.Request, error) {
 	reqURL, err := url.Parse(c.rawURL)
 	if err != nil {
 		return nil, err
@@ -199,7 +199,7 @@ func addHeaders(req *http.Request, header http.Header) {
 // are JSON decoded into the value pointed to by failureV.
 // If the status code of response is 204(no content), decoding is skipped.
 // Any error sending the request or decoding the response is returned.
-func (c *Client) Do(req *http.Request, success interface{}, failure interface{}) (*http.Response, error) {
+func (c *HttpClient) Do(req *http.Request, success interface{}, failure interface{}) (*http.Response, error) {
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return resp, err
