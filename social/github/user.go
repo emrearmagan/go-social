@@ -4,7 +4,7 @@ Created at 08.04.22 by emrearmagan
 Copyright © go-social. All rights reserved.
 */
 
-package dribbble
+package github
 
 import (
 	"go-social/social"
@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	UserPath = "/v2/user/"
+	UserPath = "/user"
 )
 
 // UserService provides methods for user credentials
@@ -20,7 +20,7 @@ type UserService struct {
 	oauth2 *oauth2.OAuth2
 }
 
-// newUserService returns a new Github UserService.
+// newUserService returns a new GitHub UserService.
 func newUserService(oauth2 *oauth2.OAuth2) *UserService {
 	return &UserService{
 		oauth2: oauth2,
