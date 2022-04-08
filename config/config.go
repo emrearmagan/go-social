@@ -8,35 +8,39 @@ package config
 
 import (
 	"encoding/json"
+	"go-social/social/oauth"
+	"go-social/social/oauth/oauth1"
+	"go-social/social/oauth/oauth2"
 	"io/ioutil"
 )
 
 type (
-	SocialAccounts struct {
-		Github   OAuth `json:"github"`
-		Dribbble OAuth `json:"dribbble"`
-		Spotify  OAuth `json:"spotify"`
-		Reddit   OAuth `json:"reddit"`
-		Facebook OAuth `json:"facebook"`
-		Twitter  OAuth `json:"twitter"`
-		Tumblr   OAuth `json:"tumblr"`
+	Config struct {
+		Github   OAuth2Config `json:"github"`
+		Dribbble OAuth2Config `json:"dribbble"`
+		Spotify  OAuth2Config `json:"spotify"`
+		Reddit   OAuth2Config `json:"reddit"`
+		Facebook OAuth2Config `json:"facebook"`
+		Twitter  OAuth1Config `json:"twitter"`
+		Tumblr   OAuth1Config `json:"tumblr"`
 	}
 
-	OAuth struct {
-		ConsumerKey    string `json:"consumer_key"`
-		ConsumerSecret string `json:"consumer_secret"`
+	OAuthCredentials struct {
+		Credentials oauth.Credentials `json:"credentials"`
 	}
 
 	OAuth1Config struct {
-		OAuthConfig OAuth `json:"oauth_config"`
+		Credentials oauth.Credentials `json:"credentials"`
+		Token       oauth1.Token      `json:"token"`
 	}
 
 	OAuth2Config struct {
-		OAuthConfig OAuth `json:"oauth_config"`
+		Credentials oauth.Credentials `json:"credentials"`
+		Token       oauth2.Token      `json:"token"`
 	}
 )
 
-var Accounts *SocialAccounts
+var Accounts *Config
 
 func LoadConfig(path string) error {
 	content, err := ioutil.ReadFile(path)
