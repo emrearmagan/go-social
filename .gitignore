@@ -40,6 +40,7 @@ CLion, Android Studio, WebStorm, Rider and Goland
 https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff
+.idea
 .idea/vcs.xml
 .idea/**/workspace.xml
 .idea/**/tasks.xml
