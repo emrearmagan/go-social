@@ -1,0 +1,30 @@
+{
+      "github": {
+        "consumer_key":    "XXXXXX",
+        "consumer_secret": "XXXXXX"
+      },
+      "dribbble": {
+        "consumer_key":    "XXXXXX",
+        "consumer_secret": "XXXXXX"
+      },
+      "spotify": {
+        "consumer_key":    "XXXXXX",
+        "consumer_secret": "XXXXXX"
+      },
+      "facebook": {
+        "consumer_key":    "XXXXXX",
+        "consumer_secret": "XXXXXX"
+      },
+      "reddit": {
+        "consumer_key":    "XXXXXX",
+        "consumer_secret": "XXXXXX"
+      },
+      "twitter": {
+        "consumer_key":    "XXXXXX",
+        "consumer_secret": "XXXXXX"
+      },
+      "tumblr": {
+        "consumer_key":    "XXXXXX",
+        "consumer_secret": "XXXXXX"
+      }
+}
