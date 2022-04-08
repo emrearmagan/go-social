@@ -69,10 +69,6 @@ func (a *OAuth2) Get(path string, resp interface{}, apiError social.Errors, para
 	}
 
 	httpResp, err := client.Do(req, resp, apiError.ErrorDetail())
-	if err != nil {
-		return err
-	}
-
 	if httpResp != nil {
 		if code := httpResp.StatusCode; code >= 300 {
 			apiError.SetStatus(httpResp.StatusCode)
@@ -95,7 +91,32 @@ func (a *OAuth2) AddCustomHeaders(key, value string) {
 	a.client = a.client.Set(key, value)
 }
 
-//----------------
+func (a *OAuth2) RefreshToken(refreshBase string, path string, resp interface{}, apiError social.Errors) error {
+	// Using a new http client so we don't mess up the base path for other requests.
+	// Since some APIs use a different base path for refreshing tokens, like reddit
+	client := social.NewClient().Base(refreshBase).Post(path)
+	req, err := client.Request()
+	if err != nil {
+		return err
+	}
+
+	req, err = a.signRequest(req)
+	if err != nil {
+		return err
+	}
+
+	//TODO: Somehow use custom headers here...
+	client.Set("User-Agent", "ios:Socially:1.0 (by /u/sociallyapp-ios)")
+
+	httpResp, err := client.Do(req, resp, apiError.ErrorDetail())
+	if httpResp != nil {
+		if code := httpResp.StatusCode; code >= 300 {
+			apiError.SetStatus(httpResp.StatusCode)
+		}
+	}
+	return social.RelevantError(err, apiError)
+}
+
 func (a *OAuth2) signRequest(req *http.Request) (*http.Request, error) {
 	if a.credentials.ConsumerKey == "" {
 		return nil, errors.New("OAuth2: provide valid credentials")
@@ -105,7 +126,6 @@ func (a *OAuth2) signRequest(req *http.Request) (*http.Request, error) {
 	data.Set("grant_type", "refresh_token")
 	data.Set("refresh_token", a.token.RefreshToken)
 
-	req = req.WithContext(a.ctx)
 	req.Body = ioutil.NopCloser(strings.NewReader(data.Encode()))
 
 	for k, v := range a.oAuthSigningParams() {
@@ -117,37 +137,24 @@ func (a *OAuth2) signRequest(req *http.Request) (*http.Request, error) {
 	return req, nil
 }
 
-func (a *OAuth2) RefreshToken(refreshBase string, path string) (*http.Request, error) {
-	client := a.Client().Base(refreshBase).Post(path)
-
-	req, err := client.Request()
-	if err != nil {
-		return nil, err
-	}
-
-	req = req.WithContext(a.ctx)
-	req, err = a.signRequest(req)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
 func (a *OAuth2) Client() *social.HttpClient {
 	return a.client
+}
+
+func (a *OAuth2) UpdateToken(token *Token) {
+	a.token = token
 }
 
 // oauthParams returns the OAuth2 header parameters for the given credentials
 // See https://tools.ietf.org/html/rfc6749
 func (a *OAuth2) oAuthSigningParams() map[string]string {
 	return map[string]string{
-		AuthorizationHeaderName: authorizationHeaderValue(a.credentials),
+		AuthorizationHeaderName: a.authorizationHeaderValue(),
 		ContentTypeHeaderName:   "application/x-www-form-urlencoded",
 	}
 }
 
-func authorizationHeaderValue(c *oauth.Credentials) string {
-	//TODO: Use the given autorization prefix
-	return BasicAuthorizationPrefix + base64Enc(fmt.Sprintf("%s:%s", c.ConsumerKey, c.ConsumerSecret))
+func (a *OAuth2) authorizationHeaderValue() string {
+	//TODO:.... do all use basic ?
+	return BasicAuthorizationPrefix + base64Enc(fmt.Sprintf("%s:%s", a.credentials.ConsumerKey, a.credentials.ConsumerSecret))
 }

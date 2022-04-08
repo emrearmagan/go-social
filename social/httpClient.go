@@ -213,7 +213,6 @@ func addHeaders(req *http.Request, header http.Header) {
 // If the status code of response is 204(no content), decoding is skipped.
 // Any error sending the request or decoding the response is returned.
 func (c *HttpClient) Do(req *http.Request, success interface{}, failure interface{}) (*http.Response, error) {
-	println(c.rawURL)
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return resp, err

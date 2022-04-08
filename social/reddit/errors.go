@@ -54,12 +54,16 @@ func (e *APIError) SetStatus(code int) {
 }
 
 func (e *APIError) ReturnErrorResponse() error {
+	println("HEREE")
+	println(e.Status())
 	switch e.Status() {
 	case 304: // The content has not been modified and client should use cached data
 		return models.ErrNotModified
 	case 401, 403: // Invalid or expired token (if token has been revoked) - The access token used in the request is incorrect or has expired.
+		println("THISS")
 		return models.ErrUnauthorized
 	case 429: // Rate limit exceeded	 - The request limit for this resource has been reached for the current rate limit window.
+		println("THISS2")
 		return models.ErrRateLimit
 	case 500, 502, 503: //Internal api error
 		return models.ErrApiError
