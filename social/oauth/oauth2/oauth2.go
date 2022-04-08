@@ -46,16 +46,6 @@ func NewOAuth2(ctx context.Context, c *oauth.Credentials, token *Token) *OAuth2 
 	}
 }
 
-func (a *OAuth2) New() *OAuth2 {
-	return &OAuth2{
-		ctx:                 a.ctx,
-		credentials:         a.credentials,
-		token:               a.token,
-		client:              a.client.New(),
-		AuthorizationPrefix: a.AuthorizationPrefix,
-	}
-}
-
 func (a *OAuth2) NewClient(client *social.HttpClient) *OAuth2 {
 	return &OAuth2{
 		ctx:                 a.ctx,

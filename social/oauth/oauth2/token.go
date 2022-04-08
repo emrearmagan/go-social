@@ -6,7 +6,7 @@ Copyright © go-social. All rights reserved.
 
 package oauth2
 
-// Token represents an OAuth1 AccessToken (token credentials) and secret
+// Token represents an OAuth1 AccessToken (Token credentials) and secret
 type Token struct {
 	Token        string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`

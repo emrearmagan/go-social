@@ -27,8 +27,8 @@ func NewClient(oauth *oauth2.OAuth2) *Client {
 	oauth = oauth.NewClient(oauth.Client().Base(Base))
 	oauth.AuthorizationPrefix = AuthorizationPrefix
 	return &Client{
-		User:  newUserService(oauth.New()),
-		Shots: newShotService(oauth.New()),
+		User:  newUserService(oauth),
+		Shots: newShotService(oauth),
 	}
 }
 
