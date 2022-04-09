@@ -74,7 +74,6 @@ func (a *OAuth2) Get(path string, resp interface{}, apiError social.Errors, para
 			apiError.SetStatus(httpResp.StatusCode)
 		}
 	}
-
 	return social.RelevantError(err, apiError)
 }
 

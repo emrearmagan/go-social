@@ -23,6 +23,8 @@ type Client struct {
 
 // NewClient returns a new Dribbble Client.
 func NewClient(oauth *oauth2.OAuth2, userAgent string) *Client {
+	//TODO: Create client here and add the header before adding it to the oauth.
+	// That way i dont need to put the user agent every where
 	oauth = oauth.NewClient(oauth.Client().Base(Base))
 	oauth.AuthorizationPrefix = AuthorizationPrefix
 	return &Client{

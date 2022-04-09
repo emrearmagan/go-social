@@ -1,28 +1,31 @@
 /*
 errors.go
-Created at 08.04.22 by emrearmagan
+Created at 09.04.22 by emrearmagan
 Copyright © go-social. All rights reserved.
 */
 
-package reddit
+package spotify
 
 import (
 	"fmt"
 	"go-social/models"
 )
 
-//TODO: Reddit errors are not properly handled
-
-// APIError represents a Reddit API error with its corresponding http StatusCode response
+// APIError represents a Spotify API error with its corresponding http StatusCode response
+// https://developer.spotify.com/documentation/web-api/
 type APIError struct {
 	StatusCode int
-	Errors     ErrorDetail
+	Errors     ErrorDetail `json:"error"`
 }
 
 // ErrorDetail represents the actual error response from the Api
 type ErrorDetail struct {
-	Message   string `json:"message"`
-	ErrorCode int    `json:"error"`
+	ErrorStruct ErrorStruct `json:"error"`
+}
+
+type ErrorStruct struct {
+	StatusCode int    `json:"status"`
+	Message    string `json:"message"`
 }
 
 func (e *APIError) ErrorDetail() interface{} {
@@ -30,8 +33,8 @@ func (e *APIError) ErrorDetail() interface{} {
 }
 
 func (e *APIError) Error() string {
-	if len(e.Errors.Message) > 0 {
-		return fmt.Sprintf("Reddit: %d - %v", e.StatusCode, e.Errors)
+	if (e.Errors != ErrorDetail{}) {
+		return fmt.Sprintf("Spotify: %d - %v", e.StatusCode, e.Errors.ErrorStruct.Message)
 	}
 	return ""
 }
@@ -39,7 +42,7 @@ func (e *APIError) Error() string {
 // Empty returns true if empty. Otherwise, at least 1 error message/code is
 // present and false is returned.
 func (e *APIError) Empty() bool {
-	if len(e.Errors.Message) == 0 {
+	if (e.Errors == ErrorDetail{}) {
 		return true
 	}
 	return false
