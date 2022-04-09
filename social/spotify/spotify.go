@@ -14,8 +14,9 @@ const (
 )
 
 type Client struct {
-	Account *AccountService
-	User    *UserService
+	Account  *AccountService
+	User     *UserService
+	Playlist *PlaylistService
 }
 
 // NewClient returns a new Dribbble Client.
@@ -23,7 +24,8 @@ func NewClient(oauth *oauth2.OAuth2) *Client {
 	oauth = oauth.NewClient(oauth.Client().Base(Base))
 	oauth.AuthorizationPrefix = AuthorizationPrefix
 	return &Client{
-		Account: newAccountService(oauth),
-		User:    newUserService(oauth),
+		Account:  newAccountService(oauth),
+		User:     newUserService(oauth),
+		Playlist: newPlaylistService(oauth),
 	}
 }
