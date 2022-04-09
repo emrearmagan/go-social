@@ -123,13 +123,13 @@ _, err = spotify.User.UserCredentials()
                 // Rate limit exceeded. Try later again.
             case errors.ErrApiError:
                 // Some API Error happened. See err.Error() for further information
-                fmt.Println(err.Error())
             case errors.ErrNotModified:
                 // The requested resource has not been modified since the previous transmission
             default:
                 // Some other error
             }
         }
+        fmt.Println(err.Error())
         return
     }
 ```
