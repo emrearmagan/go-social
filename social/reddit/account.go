@@ -49,3 +49,11 @@ func (a *AccountService) RefreshToken() (*oauth2.OAuthRefreshResponse, error) {
 		Scope:     oauthResp.Scope,
 	}, social.CheckError(err)
 }
+
+type OAuth2RefreshResponse struct {
+	AccessToken  string `json:"access_token"`
+	TokenType    string `json:"token_type"`
+	ExpiresIn    int    `json:"expires_in"`
+	RefreshToken string `json:"refresh_token"`
+	Scope        string `json:"scope"`
+}

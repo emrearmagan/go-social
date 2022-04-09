@@ -44,14 +44,9 @@ func (f *FollowerService) FollowerIds(cursor int64, max *int) (*FollowersIdRespo
 
 // FollowingIds returns the ids of the following for the authenticated user.
 // https://docs.github.com/en/rest/reference/users#list-the-people-the-authenticated-user-follows
-func (f *FollowerService) FollowingIds(cursor int64, max *int) (*FollowersIdResponse, error) {
+func (f *FollowerService) FollowingIds(params *UserFollowerIdParams) (*FollowersIdResponse, error) {
 	following := new(FollowersIdResponse)
 	apiError := new(APIError)
-
-	params := UserFollowerIdParams{
-		PerPage: max,
-		Page:    int(cursor),
-	}
 
 	err := f.oauth2.Get(FollowerPath, following, apiError, params)
 	return following, social.CheckError(err)
@@ -61,4 +56,10 @@ func (f *FollowerService) FollowingIds(cursor int64, max *int) (*FollowersIdResp
 type UserFollowerIdParams struct {
 	PerPage *int `url:"per_page,omitempty"` // PerPage per page (max 100), Default: 30
 	Page    int  `url:"page,omitempty"`     // Page number of the results to fetch, Default: 1
+}
+
+// FollowersIdResponse List of ids of the Followers of the authenticated user
+// https://docs.github.com/en/rest/reference/users#list-followers-of-the-authenticated-user
+type FollowersIdResponse []struct {
+	Id int64 `json:"id"`
 }

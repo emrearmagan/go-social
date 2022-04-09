@@ -36,3 +36,29 @@ func (u *UserService) UserCredentials() (*User, error) {
 	err := u.oauth2.Get(UserPath, user, apiError, nil)
 	return user, social.CheckError(err)
 }
+
+type User struct {
+	Country         string `json:"country"`
+	DisplayName     string `json:"display_name"`
+	ExplicitContent struct {
+		FilterEnabled bool `json:"filter_enabled"`
+		FilterLocked  bool `json:"filter_locked"`
+	} `json:"explicit_content"`
+	ExternalUrls struct {
+		Spotify string `json:"spotify"`
+	} `json:"external_urls"`
+	Followers struct {
+		Href  interface{} `json:"href"`
+		Total int         `json:"total"`
+	} `json:"followers"`
+	Href   string `json:"href"`
+	ID     string `json:"id"`
+	Images []struct {
+		Height interface{} `json:"height"`
+		URL    string      `json:"url"`
+		Width  interface{} `json:"width"`
+	} `json:"images"`
+	Product string `json:"product"`
+	Type    string `json:"type"`
+	URI     string `json:"uri"`
+}
