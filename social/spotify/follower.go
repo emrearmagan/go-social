@@ -15,6 +15,8 @@ const (
 	FollowerPath = "/v1/me/following"
 )
 
+//TODO: not really testes
+
 // FollowerService provides methods for users followers
 type FollowerService struct {
 	oauth2 *oauth2.OAuth2
@@ -28,7 +30,6 @@ func newFollowerService(oauth2 *oauth2.OAuth2) *FollowerService {
 }
 
 // Following returns information about the authenticated users followers.
-//TODO: not really testes
 func (f *FollowerService) Following(params *FollowingParams) (*FollowingResponse, error) {
 	followed := new(FollowingResponse)
 	apiError := new(APIError)

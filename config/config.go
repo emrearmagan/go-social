@@ -8,6 +8,9 @@ package config
 
 import (
 	"encoding/json"
+	"github.com/emrearmagan/go-social/oauth"
+	"github.com/emrearmagan/go-social/oauth/oauth1"
+	"github.com/emrearmagan/go-social/oauth/oauth2"
 	"io/ioutil"
 )
 
@@ -23,17 +26,13 @@ type (
 	}
 
 	OAuth1Config struct {
-		ConsumerKey    string `json:"consumer_key"`
-		ConsumerSecret string `json:"consumer_secret"`
-		Token          string `json:"access_token"`
-		TokenSecret    string `json:"token_secret"`
+		Token       oauth1.Token      `json:"token"`
+		Credentials oauth.Credentials `json:"credentials"`
 	}
 
 	OAuth2Config struct {
-		ConsumerKey    string `json:"consumer_key"`
-		ConsumerSecret string `json:"consumer_secret"`
-		Token          string `json:"access_token"`
-		RefreshToken   string `json:"refresh_token"`
+		Token       oauth2.Token      `json:"token"`
+		Credentials oauth.Credentials `json:"credentials"`
 	}
 )
 

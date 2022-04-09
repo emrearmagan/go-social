@@ -1,44 +1,72 @@
 {
   "github": {
-    "consumer_key":    "XXXXX",
-    "consumer_secret": "XXXXX",
-    "access_token":    "XXXXX",
-    "refresh_token": ""
+    "token": {
+      "access_token":    "XXXXXX",
+      "refresh_token": ""
+    },
+    "credentials": {
+      "consumer_key":    "XXXXXX",
+      "consumer_secret": "XXXXXX"
+    }
   },
   "dribbble": {
-    "consumer_key":    "XXXXX",
-    "consumer_secret": "XXXXX",
-    "access_token":    "XXXXX",
-    "refresh_token": ""
+    "token": {
+      "access_token":    "XXXXXX",
+      "refresh_token": ""
+    },
+    "credentials": {
+      "consumer_key":    "XXXXXX",
+      "consumer_secret": "XXXXXX"
+    }
   },
   "spotify": {
-    "consumer_key":    "XXXXX",
-    "consumer_secret": "XXXXX",
-    "access_token":    "XXXXX",
-    "refresh_token": "XXXXX"
+    "token": {
+      "access_token":    "XXXXXX",
+      "refresh_token": "XXXXXX"
+    },
+    "credentials": {
+      "consumer_key":    "XXXXXX",
+      "consumer_secret": "XXXXXX"
+    }
   },
   "facebook": {
-    "consumer_key":    "XXXXX",
-    "consumer_secret": "XXXXX",
-    "access_token":    "XXXXX",
-    "refresh_token": "XXXXX"
+    "token": {
+      "access_token":    "XXXXX",
+      "refresh_token": "XXXX"
+    },
+    "credentials": {
+      "consumer_key":    "XXXXXX",
+      "consumer_secret": "XXXXXX"
+    }
   },
   "reddit": {
-    "consumer_key":    "XXXXX",
-    "consumer_secret": "",
-    "access_token":    "XXXXX",
-    "refresh_token": "XXXXX"
+    "token": {
+      "consumer_key":    "XXXXXX",
+      "consumer_secret": ""
+    },
+    "credentials": {
+      "access_token":    "XXXXXX",
+      "refresh_token": "XXXXXX"
+    }
   },
   "twitter": {
-    "consumer_key":    "XXXXX",
-    "consumer_secret": "XXXXX",
-    "access_token":    "XXXXX",
-    "token_secret": "XXXXX"
+    "token": {
+      "access_token":    "XXXXXX",
+      "token_secret": "XXXXXX"
+    },
+    "credentials": {
+      "consumer_key":    "XXXXXX",
+      "consumer_secret": "XXXXXX"
+    }
   },
   "tumblr": {
-    "consumer_key":    "XXXXX",
-    "consumer_secret": "XXXXX",
-    "access_token":    "XXXXX",
-    "token_secret": "XXXXX"
+    "token": {
+      "access_token":    "XXXXXX",
+      "token_secret": "XXXXXX"
+    },
+    "credentials": {
+      "consumer_key":    "XXXXXX",
+      "consumer_secret": "XXXXXX"
+    }
   }
 }
