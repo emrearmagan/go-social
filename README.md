@@ -176,15 +176,16 @@ token := oauth1.NewToken("TOKEN", "TOKEN_SECRET")
 auth := oauth1.NewOAuth(context.TODO(), cred, token)
 
 // Either use the build in http client or create your own
-httpClient := social.NewClient().Base("https://api.somesite.com/v2/")
+httpClient := social.NewHttpClient().Base("https://api.somesite.com/v2/")
+httpClient.Set("User-Agent", "go/go-social")
 // Set the http client for further requests
 auth = auth.NewClient(httpClient)
 // Initialize your own response and error struct
 resp := new(CustomStruct)
-error := new(ErrorStruct)
+apiError := new(ErrorStruct)
 
 // Make the request. Request will be automatically signed using the default HMAC Signer.
-err := auth.Get("/me/user", resp, error, nil)
+err := auth.Get("/me/user", resp, apiError, nil)
 if err != nil {
     log.Fatal(err.Error())
 }

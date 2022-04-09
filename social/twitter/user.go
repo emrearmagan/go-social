@@ -27,9 +27,7 @@ func newUserService(oauth1 *oauth1.OAuth1) *UserService {
 	}
 }
 
-// UserCredentials returns the authorized user if credentials are valid and
-// returns an error otherwise.
-// Requires a user auth context.
+// UserCredentials returns the authorized user if credentials are valid and returns an error otherwise.
 // https://dev.twitter.com/rest/reference/get/account/verify_credentials
 func (u *UserService) UserCredentials(params *UserCredentialsParams) (*User, error) {
 	user := new(User)

@@ -33,8 +33,8 @@ type HttpClient struct {
 	responseDecoder ResponseDecoder
 }
 
-// NewClient returns a new http client with a http DefaultClient.
-func NewClient() *HttpClient {
+// NewHttpClient returns a new http client with a http DefaultClient.
+func NewHttpClient() *HttpClient {
 	return &HttpClient{
 		httpClient:      http.DefaultClient,
 		method:          http.MethodGet,

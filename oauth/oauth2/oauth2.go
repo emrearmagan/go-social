@@ -8,8 +8,8 @@ package oauth2
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"github.com/emrearmagan/go-social/models/errors"
 	"github.com/emrearmagan/go-social/oauth"
 	"github.com/emrearmagan/go-social/social"
 	"io/ioutil"
@@ -41,7 +41,7 @@ func NewOAuth(ctx context.Context, c *oauth.Credentials, token *Token) *OAuth2 {
 		ctx:                 ctx,
 		credentials:         c,
 		token:               token,
-		client:              social.NewClient(),
+		client:              social.NewHttpClient(),
 		AuthorizationPrefix: BasicAuthorizationPrefix,
 	}
 }
@@ -111,7 +111,7 @@ func (a *OAuth2) RefreshToken(refreshBase string, path string, resp interface{},
 
 func (a *OAuth2) signRequest(req *http.Request) (*http.Request, error) {
 	if a.credentials.ConsumerKey == "" {
-		return nil, errors.New("OAuth2: provide valid credentials")
+		return nil, errors.New(errors.ErrBadAuthenticationData, "OAuth2: provide valid credentials")
 	}
 
 	data := url.Values{}

@@ -9,8 +9,8 @@ package oauth1
 import (
 	"context"
 	"crypto/rand"
-	"errors"
 	"fmt"
+	"github.com/emrearmagan/go-social/models/errors"
 	"github.com/emrearmagan/go-social/oauth"
 	"github.com/emrearmagan/go-social/social"
 	"net/http"
@@ -51,7 +51,7 @@ func NewOAuth(ctx context.Context, c *oauth.Credentials, token *Token) *OAuth1 {
 		ctx:         ctx,
 		credentials: c,
 		token:       token,
-		client:      social.NewClient(),
+		client:      social.NewHttpClient(),
 	}
 }
 
@@ -113,10 +113,10 @@ func (a *OAuth1) Client() *social.HttpClient {
 
 func (a *OAuth1) SignRequest(req *http.Request) error {
 	if a.credentials.ConsumerKey == "" || a.credentials.ConsumerSecret == "" {
-		return errors.New("OAuth1: provide valid credentials")
+		return errors.New(errors.ErrBadAuthenticationData, "OAuth1: provide valid credentials")
 	}
 	if a.token.Token == "" || a.token.TokenSecret == "" {
-		return errors.New("OAuth1: provide valid token")
+		return errors.New(errors.ErrBadAuthenticationData, "OAuth1: provide valid token")
 	}
 
 	oauthParams := a.oAuthParams(req)
@@ -127,7 +127,7 @@ func (a *OAuth1) SignRequest(req *http.Request) error {
 	//Sign
 	signature, err := a.Signer().Sign(a.token.TokenSecret, signatureBase)
 	if err != nil {
-		return errors.New("OAuth1: failed to sign message")
+		return errors.New(errors.ErrBadAuthenticationData, "OAuth1: failed to sign message")
 	}
 
 	oauthParams[oauthSignatureParam] = signature
