@@ -13,7 +13,8 @@ import (
 )
 
 type Client struct {
-	User *UserService
+	User     *UserService
+	Follower *FollowerService
 }
 
 const (
@@ -24,7 +25,8 @@ const (
 func NewClient(oauth *oauth1.OAuth1) *Client {
 	oauth = oauth.NewClient(oauth.Client().Base(Base))
 	return &Client{
-		User: newUserService(oauth),
+		User:     newUserService(oauth),
+		Follower: newFollowerService(oauth),
 	}
 }
 
