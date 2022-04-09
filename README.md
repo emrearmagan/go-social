@@ -2,7 +2,6 @@
 
 ![Commit](https://img.shields.io/github/last-commit/emrearmagan/go-social)
 ![MIT](https://img.shields.io/github/license/mashape/apistatus.svg)
-
 ----
 <br>
 go-social is a Go client library for the various social media APIs.

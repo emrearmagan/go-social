@@ -1,4 +1,4 @@
-module go-social
+module github.com/emrearmagan/go-social
 
 go 1.13
 
