@@ -61,7 +61,7 @@ func (e *APIError) SetStatus(code int) {
 func (e *APIError) ReturnErrorResponse() error {
 	switch e.Status() {
 	case int(invalidCoordinates), int(parameterMissing):
-		return models.ErrBadRequst
+		return models.ErrBadRequest
 	case int(rateLimitExceeded):
 		return models.ErrRateLimit
 	case int(invalidExpiredToken):

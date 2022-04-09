@@ -9,8 +9,7 @@ package models
 import "errors"
 
 var (
-	// Business layer
-	ErrBadRequst             = errors.New("bad request")
+	ErrBadRequest            = errors.New("bad request")
 	ErrNotFound              = errors.New("not found")
 	ErrUnauthorized          = errors.New("unauthorized")
 	ErrRateLimit             = errors.New("rate limit exceeded")

@@ -1,5 +1,5 @@
 /*
-twitter.go
+spotify_refresh.go
 Created at 09.04.22 by emrearmagan
 Copyright © go-social. All rights reserved.
 */
@@ -11,8 +11,8 @@ import (
 	"flag"
 	"fmt"
 	"github.com/emrearmagan/go-social/config"
-	"github.com/emrearmagan/go-social/oauth/oauth1"
-	"github.com/emrearmagan/go-social/social/twitter"
+	"github.com/emrearmagan/go-social/oauth/oauth2"
+	"github.com/emrearmagan/go-social/social/spotify"
 	"log"
 )
 
@@ -29,18 +29,17 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	conf := oauth1.NewOAuth(context.TODO(), &accounts.Twitter.Credentials, &accounts.Twitter.Token)
-	client := twitter.NewClient(conf)
+	conf := oauth2.NewOAuth(context.TODO(), &accounts.Spotify.Credentials, &accounts.Spotify.Token)
+	client := spotify.NewClient(conf)
 
-	u, err := client.User.UserCredentials(nil)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	newToken, _ := client.Account.RefreshToken()
+	fmt.Printf("Refreshed Token: %v \n\n", newToken)
+
+	u, _ := client.User.UserCredentials()
 	fmt.Printf("User credentials: %v \n\n", u)
 
-	f, _ := client.Follower.FollowerIDs(nil)
-	fmt.Printf("Follower IDs: %v \n\n", f)
-
-	f2, _ := client.Follower.FollowingIDs(nil)
-	fmt.Printf("Following IDs: %v \n\n", f2)
+	p, _ := client.Playlist.UserPlaylists(&spotify.UserPlaylistParams{
+		Limit: 10,
+	})
+	fmt.Printf("User Playlist: %v \n\n", p)
 }
