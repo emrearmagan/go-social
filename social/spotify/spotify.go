@@ -6,7 +6,11 @@ Copyright © go-social. All rights reserved.
 
 package spotify
 
-import "go-social/social/oauth/oauth2"
+import (
+	"go-social/models"
+	"go-social/social/oauth/oauth2"
+	"strings"
+)
 
 const (
 	Base                = "https://api.spotify.com/"
@@ -30,4 +34,41 @@ func NewClient(oauth *oauth2.OAuth2) *Client {
 		Playlist: newPlaylistService(oauth),
 		Follower: newFollowerService(oauth),
 	}
+}
+
+func (s *Client) GoSocialUser() (*models.SocialUser, error) {
+	p, err := s.Playlist.UserPlaylists(nil)
+	if err != nil {
+		return nil, err
+	}
+
+	f, err := s.Follower.Following(&FollowingParams{
+		Type: "artist",
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	u, err := s.User.UserCredentials()
+	if err != nil {
+		return nil, err
+	}
+
+	avatarUrl := ""
+	if len(u.Images) > 0 {
+		avatarUrl = u.Images[0].URL
+	}
+	goSocial := models.SocialUser{
+		Username:     u.DisplayName,
+		Name:         u.DisplayName,
+		UserId:       u.ID,
+		Verified:     strings.ToLower(u.Product) == "premium",
+		ContentCount: int64(p.Total),
+		Following:    &f.Artists.Total,
+		AvatarUrl:    avatarUrl,
+		Followers:    u.Followers.Total,
+		Url:          u.ExternalUrls.Spotify,
+	}
+
+	return &goSocial, nil
 }
