@@ -37,13 +37,17 @@ type (
 	}
 )
 
-var Accounts *Config
+func LoadConfig(path string) (*Config, error) {
+	var accounts *Config
 
-func LoadConfig(path string) error {
 	content, err := ioutil.ReadFile(path)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return json.Unmarshal(content, &Accounts)
+	if err = json.Unmarshal(content, &accounts); err != nil {
+		return nil, err
+	}
+
+	return accounts, nil
 }
