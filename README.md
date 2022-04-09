@@ -4,7 +4,8 @@
 ![MIT](https://img.shields.io/github/license/mashape/apistatus.svg)
 ----
 <br>
-go-social is a Go client library for the various social media APIs.
+
+go-social is a Go client library for the various social media APIs. Which is currently used in one of my projects See [Socially](https://www.sociallyapp.de).
 
 ### Supported APIs
 <p>
@@ -14,7 +15,7 @@ go-social is a Go client library for the various social media APIs.
 [![Github](https://img.shields.io/badge/-Github-FFFFFF?style=flat&logo=github&logoColor=black)](https://docs.github.com/en/rest)
 [![Reddit](https://img.shields.io/badge/-Reddit-FFFFFF?style=flat&logo=reddit)](https://www.reddit.com/dev/api)
 [![Spotify](https://img.shields.io/badge/-Spotify-FFFFFF?style=flat&logo=spotify)](https://developer.spotify.com)
-<!--[![Tumblr](https://img.shields.io/badge/-Tumblr-FFFFFF?style=flat&logo=tumblr&logoColor=black)]()-->
+[![Tumblr](https://img.shields.io/badge/-Tumblr-FFFFFF?style=flat&logo=tumblr&logoColor=black)](https://www.tumblr.com/docs/en/api)
 <!--[![Facebook](https://img.shields.io/badge/-Facebook-FFFFFF?style=flat&logo=facebook)]()-->
 <!--[![Instagram](https://img.shields.io/badge/-Instagram-FFFFFF?style=flat&logo=instagram)]()-->
 
@@ -41,7 +42,8 @@ go-social is a Go client library for the various social media APIs.
   - Followed Artists
   - Refresh token
   - User Playlist
-
+- Tumblr API
+  - User Credentials
 
 ## Usage
 
@@ -198,4 +200,11 @@ Run
 
 Include in your source:
 
-    import "github.com/kurrik/twittergo"
+    import "github.com/emrearmagan/go-social"
+
+## Road Map
+- Add more Endpoints to the existing APIs such as Information about the Follower or User lookup
+- Add Facebook and Instagram API
+
+## Contribute
+Contribution is highly appreciated. Please feel free to submit a bug report or add new API Endpoints.
