@@ -8,8 +8,8 @@ package twitter
 
 import (
 	"fmt"
-	"go-social/models"
-	"go-social/social/oauth/oauth1"
+	"github.com/emrearmagan/go-social/models"
+	"github.com/emrearmagan/go-social/oauth/oauth1"
 )
 
 type Client struct {

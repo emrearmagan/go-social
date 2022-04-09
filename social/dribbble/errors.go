@@ -8,7 +8,7 @@ package dribbble
 
 import (
 	"fmt"
-	"go-social/models"
+	"github.com/emrearmagan/go-social/models"
 )
 
 // APIError represents a Dribbble API error with its corresponding http StatusCode response

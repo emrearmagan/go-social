@@ -7,8 +7,8 @@ Copyright © go-social. All rights reserved.
 package dribbble
 
 import (
-	"go-social/social"
-	"go-social/social/oauth/oauth2"
+	"github.com/emrearmagan/go-social/oauth/oauth2"
+	"github.com/emrearmagan/go-social/social"
 	"time"
 )
 

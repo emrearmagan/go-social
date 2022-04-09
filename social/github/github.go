@@ -7,8 +7,8 @@ Copyright © go-social. All rights reserved.
 package github
 
 import (
-	"go-social/models"
-	"go-social/social/oauth/oauth2"
+	"github.com/emrearmagan/go-social/models"
+	"github.com/emrearmagan/go-social/oauth/oauth2"
 	"strconv"
 	"strings"
 )

@@ -7,8 +7,8 @@ Copyright © go-social. All rights reserved.
 package twitter
 
 import (
-	"go-social/social"
-	"go-social/social/oauth/oauth1"
+	"github.com/emrearmagan/go-social/oauth/oauth1"
+	"github.com/emrearmagan/go-social/social"
 )
 
 const (
