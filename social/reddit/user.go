@@ -17,15 +17,13 @@ const (
 
 // UserService provides methods for user credentials
 type UserService struct {
-	oauth2    *oauth2.OAuth2
-	userAgent string
+	oauth2 *oauth2.OAuth2
 }
 
 // newUserService returns a new Reddit UserService.
-func newUserService(oauth2 *oauth2.OAuth2, userAgent string) *UserService {
+func newUserService(oauth2 *oauth2.OAuth2) *UserService {
 	return &UserService{
-		oauth2:    oauth2,
-		userAgent: userAgent,
+		oauth2: oauth2,
 	}
 }
 
@@ -35,7 +33,6 @@ func (u *UserService) UserCredentials() (*User, error) {
 	user := new(User)
 	apiError := new(APIError)
 
-	u.oauth2.AddCustomHeaders("User-Agent", u.userAgent)
 	err := u.oauth2.Get(UserPath, user, apiError, nil)
 	return user, social.CheckError(err)
 }

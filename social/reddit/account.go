@@ -18,15 +18,13 @@ const (
 
 // AccountService provides methods for user credentials
 type AccountService struct {
-	oauth2    *oauth2.OAuth2
-	userAgent string
+	oauth2 *oauth2.OAuth2
 }
 
 // newAccountService returns a new Reddit UserService.
-func newAccountService(oauth2 *oauth2.OAuth2, userAgent string) *AccountService {
+func newAccountService(oauth2 *oauth2.OAuth2) *AccountService {
 	return &AccountService{
-		oauth2:    oauth2,
-		userAgent: userAgent,
+		oauth2: oauth2,
 	}
 }
 

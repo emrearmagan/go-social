@@ -14,6 +14,8 @@ import (
 const (
 	Base                = "https://oauth.reddit.com"
 	AuthorizationPrefix = "bearer " // trailing space is required
+
+	UserAgentHeaderKey = "User-Agent"
 )
 
 type Client struct {
@@ -23,13 +25,13 @@ type Client struct {
 
 // NewClient returns a new Reddit Client.
 func NewClient(oauth *oauth2.OAuth2, userAgent string) *Client {
-	//TODO: Create client here and add the header before adding it to the oauth.
-	// That way i dont need to put the user agent every where
-	oauth = oauth.NewClient(oauth.Client().Base(Base))
+	client := oauth.Client().New().Base(Base)
+	client.Set(UserAgentHeaderKey, userAgent)
+	oauth = oauth.NewClient(client)
 	oauth.AuthorizationPrefix = AuthorizationPrefix
 	return &Client{
-		Account: newAccountService(oauth, userAgent),
-		User:    newUserService(oauth, userAgent),
+		Account: newAccountService(oauth),
+		User:    newUserService(oauth),
 	}
 }
 

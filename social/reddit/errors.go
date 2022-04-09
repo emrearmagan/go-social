@@ -11,7 +11,7 @@ import (
 	"go-social/models"
 )
 
-//TODO: Reddit errors are not properly handled
+//TODO: Reddit errors are not properly handled. Sometimes instead of an error html is returned
 
 // APIError represents a Reddit API error with its corresponding http StatusCode response
 type APIError struct {

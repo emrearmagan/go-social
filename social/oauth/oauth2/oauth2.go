@@ -36,7 +36,7 @@ type OAuth2 struct {
 	AuthorizationPrefix string
 }
 
-func NewOAuth2(ctx context.Context, c *oauth.Credentials, token *Token) *OAuth2 {
+func NewOAuth(ctx context.Context, c *oauth.Credentials, token *Token) *OAuth2 {
 	return &OAuth2{
 		ctx:                 ctx,
 		credentials:         c,
@@ -86,14 +86,10 @@ func (a *OAuth2) oAuthParams() map[string]string {
 	}
 }
 
-func (a *OAuth2) AddCustomHeaders(key, value string) {
-	a.client = a.client.Set(key, value)
-}
-
 func (a *OAuth2) RefreshToken(refreshBase string, path string, resp interface{}, apiError social.Errors) error {
 	// Using a new http client so we don't mess up the base path for other requests.
 	// Since some APIs use a different base path for refreshing tokens, like reddit
-	client := social.NewClient().Base(refreshBase).Post(path)
+	client := a.client.New().Base(refreshBase).Post(path)
 	req, err := client.Request()
 	if err != nil {
 		return err
@@ -103,9 +99,6 @@ func (a *OAuth2) RefreshToken(refreshBase string, path string, resp interface{},
 	if err != nil {
 		return err
 	}
-
-	//TODO: Somehow use custom headers here...
-	client.Set("User-Agent", "ios:Socially:1.0 (by /u/sociallyapp-ios)")
 
 	httpResp, err := client.Do(req, resp, apiError.ErrorDetail())
 	if httpResp != nil {
