@@ -8,7 +8,7 @@ package github
 
 import (
 	"fmt"
-	"github.com/emrearmagan/go-social/models"
+	"github.com/emrearmagan/go-social/models/errors"
 )
 
 // APIError represents a GitHub API error with its corresponding http StatusCode response
@@ -55,14 +55,14 @@ func (e *APIError) Status() int {
 func (e *APIError) ReturnErrorResponse() error {
 	switch e.Status() {
 	case 304: // The content has not been modified and client should use cached data
-		return models.ErrNotModified
+		return errors.New(errors.ErrNotModified, e.Error())
 	case 401, 403: // Invalid or expired token or client is not permitted to perform this action.
-		return models.ErrUnauthorized
+		return errors.New(errors.ErrUnauthorized, e.Error())
 	case 429: // Rate limit exceeded	 - The request limit for this resource has been reached for the current rate limit window.
-		return models.ErrRateLimit
+		return errors.New(errors.ErrRateLimit, e.Error())
 	case 500, 502, 503: //Internal api error
-		return models.ErrApiError
+		return errors.New(errors.ErrApiError, e.Error())
 	}
 
-	return models.ErrUnknownError
+	return errors.New(errors.ErrUnknownError, e.Error())
 }

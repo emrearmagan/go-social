@@ -42,8 +42,6 @@ go-social is a Go client library for the various social media APIs.
   - Refresh token
   - User Playlist
 
-## Installation
-    go get github.com/emrearmagan/go-social
 
 ## Usage
 
@@ -52,8 +50,8 @@ go-social is a Go client library for the various social media APIs.
 Initialize the required configuration for each account.
 ```go
 cred := oauth.NewCredentials("CONSUMER_KEY", "CONSUMER_SECRET")
-token := oauth1.NewToken("TOKEN", "TOKEN_SECRET")
-config := oauth1.NewOAuth(context.TODO(), cred, token)
+token := oauth2.NewToken("ACCESS_TOKEN", "REFRESH_TOKEN")
+config := oauth2.NewOAuth(context.TODO(), cred, token)
 ```
 You can also provide a config file to load your credentials and token. See [Config](./config/config_example.json) for an example.
 ```go
@@ -67,7 +65,7 @@ if err != nil {
     log.Fatal(err.Error())
 }
     
-conf := oauth1.NewOAuth(context.TODO(), &accounts.Twitter.Credentials, &accounts.Twitter.Token)
+conf := oauth2.NewOAuth(context.TODO(), &accounts.Spotify.Credentials, &accounts.Spotify.Token)
 ```
 ### Access API
 Afterwards each social media package provides a Client with a corresponding service for accessing the API. 
@@ -109,32 +107,41 @@ fmt.Printf("go-social user: %v \n", s)
 ```
 
 ### Error Handling
-Each API Error code is mapped to models.Error structs which will provide information.
+Each API Error code is mapped to models.Error structs which will provide additional information.
 
 ```go
-_, err := client.User.UserCredentials()
+_, err = spotify.User.UserCredentials()
     if err != nil {
-        switch err {
-            case models.ErrBadRequst:
+        // Logging the error
+        if e, ok := err.(errors.SocialError); ok {
+            switch e.Errors {
+            case errors.ErrBadRequest:
                 // Something bad happened
-            case models.ErrUnauthorized, models.ErrBadAuthenticationData, models.ErrInvalidOrExpiredToken:
+            case errors.ErrUnauthorized, errors.ErrBadAuthenticationData, errors.ErrInvalidOrExpiredToken:
                 // Request was unauthorized
-            case models.ErrRateLimit:
+            case errors.ErrRateLimit:
                 // Rate limit exceeded. Try later again.
-            case models.ErrApiError:
+            case errors.ErrApiError:
                 // Some API Error happened. See err.Error() for further information
-            case models.ErrNotModified:
+                fmt.Println(err.Error())
+            case errors.ErrNotModified:
                 // The requested resource has not been modified since the previous transmission
-            default: 
+            default:
                 // Some other error
+            }
+        }
+        return
     }
-    return
-}
+```
+The previous snippet would print the following if an unauthorized/invalid spotify user attempted to retrieve user credentials:
+
+```
+Spotify: 401 - The access token expired
 ```
 
 ### Refreshing a Token
-Most access tokens typically have a limited lifetime such as the `Spotify` API. Once they expire clients can use the refresh token to refresh the access token.
-Calling the refresh Method automatically sets the new access token so that further API calls become valid.
+Most access tokens typically have a limited lifetime such as the `Spotify` API. Once they expire clients can use the refresh token to `refresh` the access token.
+Calling the refresh Method automatically sets the new access token so that further API calls become valid again.
 ```go
 if _, err := spotify.User.UserCredentials(); err != nil {
     //Access token expired
@@ -147,5 +154,47 @@ if _, err := spotify.User.UserCredentials(); err != nil {
 // Access token updated, do request with the updated token
 user,  := spotify.User.UserCredentials()
 ```
+### Custom API calls
 
+The go-social library comes with some standard api calls and structures for like User Credentials etc., but you are not required to use them.
+Create your own OAuth object and make request.
 
+```go
+// Struct for the api response
+type CustomStruct struct {
+    CustomID        string `json:"id"`
+    CustomUsername  string `json:"username"`
+}
+
+type ErrorStruct struct {
+    Code    int     `json:"code"`
+    Message string `json:"message"`
+}
+
+cred := oauth.NewCredentials("CONSUMER_KEY", "CONSUMER_SECRET")
+token := oauth1.NewToken("TOKEN", "TOKEN_SECRET")
+auth := oauth1.NewOAuth(context.TODO(), cred, token)
+
+// Either use the build in http client or create your own
+httpClient := social.NewClient().Base("https://api.somesite.com/v2/")
+// Set the http client for further requests
+auth = auth.NewClient(httpClient)
+// Initialize your own response and error struct
+resp := new(CustomStruct)
+error := new(ErrorStruct)
+
+// Make the request. Request will be automatically signed using the default HMAC Signer.
+err := auth.Get("/me/user", resp, error, nil)
+if err != nil {
+    log.Fatal(err.Error())
+}
+// do something with `resp`
+```
+## Installation
+Run
+
+    go get github.com/emrearmagan/go-social
+
+Include in your source:
+
+    import "github.com/kurrik/twittergo"

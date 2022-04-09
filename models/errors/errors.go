@@ -4,9 +4,11 @@ Created at 08.04.22 by emrearmagan
 Copyright © go-social. All rights reserved.
 */
 
-package models
+package errors
 
-import "errors"
+import (
+	"errors"
+)
 
 var (
 	ErrBadRequest            = errors.New("bad request")
@@ -21,3 +23,19 @@ var (
 
 	ErrUnknownError = errors.New("unknown error")
 )
+
+type SocialError struct {
+	Errors  error
+	Message string
+}
+
+func New(error error, message string) SocialError {
+	return SocialError{
+		Errors:  error,
+		Message: message,
+	}
+}
+
+func (s SocialError) Error() string {
+	return s.Message
+}

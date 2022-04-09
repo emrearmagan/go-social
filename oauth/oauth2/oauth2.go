@@ -56,7 +56,7 @@ func (a *OAuth2) NewClient(client *social.HttpClient) *OAuth2 {
 	}
 }
 
-func (a *OAuth2) Get(path string, resp interface{}, apiError social.Errors, params interface{}) error {
+func (a *OAuth2) Get(path string, resp interface{}, apiError social.ApiErrors, params interface{}) error {
 	client := a.client.AddQuery(params).Get(path)
 
 	req, err := a.client.Request()
@@ -86,7 +86,7 @@ func (a *OAuth2) oAuthParams() map[string]string {
 	}
 }
 
-func (a *OAuth2) RefreshToken(refreshBase string, path string, resp interface{}, apiError social.Errors) error {
+func (a *OAuth2) RefreshToken(refreshBase string, path string, resp interface{}, apiError social.ApiErrors) error {
 	// Using a new http client so we don't mess up the base path for other requests.
 	// Since some APIs use a different base path for refreshing tokens, like reddit
 	client := a.client.New().Base(refreshBase).Post(path)

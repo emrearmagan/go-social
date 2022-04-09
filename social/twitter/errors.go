@@ -8,7 +8,7 @@ package twitter
 
 import (
 	"fmt"
-	"github.com/emrearmagan/go-social/models"
+	"github.com/emrearmagan/go-social/models/errors"
 )
 
 // APIError represents a Spotify API error with its corresponding http StatusCode response
@@ -61,24 +61,24 @@ func (e *APIError) SetStatus(code int) {
 func (e *APIError) ReturnErrorResponse() error {
 	switch e.Status() {
 	case int(invalidCoordinates), int(parameterMissing):
-		return models.ErrBadRequest
+		return errors.New(errors.ErrBadRequest, e.Error())
 	case int(rateLimitExceeded):
-		return models.ErrRateLimit
+		return errors.New(errors.ErrRateLimit, e.Error())
 	case int(invalidExpiredToken):
-		return models.ErrInvalidOrExpiredToken
+		return errors.New(errors.ErrInvalidOrExpiredToken, e.Error())
 	case int(internalError):
-		return models.ErrApiError
+		return errors.New(errors.ErrApiError, e.Error())
 	case int(badAuthenticationData):
-		return models.ErrBadAuthenticationData
+		return errors.New(errors.ErrBadAuthenticationData, e.Error())
 	case int(endpointRetired), int(pageDoesNotExists), int(userNotFound), int(noLocation), int(noUserMatches):
-		return models.ErrNotFound
+		return errors.New(errors.ErrNotFound, e.Error())
 	case int(userSuspended), int(accountSuspended), int(appNotAllowedToAccessOrDeleteMessage), int(credentialsDontAllowThisResource), int(appCannotPerformWriteActions):
-		return models.ErrForbidden
+		return errors.New(errors.ErrForbidden, e.Error())
 	case int(invalidSuspendedApp), int(couldNotAuthenticate), int(notPermitted), int(unableToVerifyCreds), int(notAuthorizedForThisStatus):
-		return models.ErrUnauthorized
+		return errors.New(errors.ErrUnauthorized, e.Error())
 	}
 
-	return models.ErrUnknownError
+	return errors.New(errors.ErrUnknownError, e.Error())
 }
 
 // Most of the error codes from Twitter API.

@@ -1,12 +1,12 @@
 /*
-errors.go
+api-error.go
 Created at 08.04.22 by emrearmagan
 Copyright © go-social. All rights reserved.
 */
 
 package social
 
-type Errors interface {
+type ApiErrors interface {
 	Error() string
 	ErrorDetail() interface{}
 	Empty() bool
@@ -17,7 +17,7 @@ type Errors interface {
 
 // RelevantError returns any non-nil http-related error if any. If the decoded apiError is non-zero
 // the apiError is returned. Otherwise, no errors occurred, returns nil.
-func RelevantError(httpError error, apiError Errors) error {
+func RelevantError(httpError error, apiError ApiErrors) error {
 	if httpError != nil {
 		return httpError
 	}
@@ -31,7 +31,7 @@ func RelevantError(httpError error, apiError Errors) error {
 
 func CheckError(err error) error {
 	switch e := err.(type) {
-	case Errors:
+	case ApiErrors:
 		return e.ReturnErrorResponse()
 	case error:
 		return err

@@ -64,7 +64,7 @@ func (a *OAuth1) NewClient(client *social.HttpClient) *OAuth1 {
 	}
 }
 
-func (a *OAuth1) Get(path string, resp interface{}, apiError social.Errors, params interface{}) error {
+func (a *OAuth1) Get(path string, resp interface{}, apiError social.ApiErrors, params interface{}) error {
 	client := a.client.AddQuery(params).Get(path)
 
 	req, err := a.client.Request()

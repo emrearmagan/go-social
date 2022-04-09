@@ -8,7 +8,7 @@ package dribbble
 
 import (
 	"fmt"
-	"github.com/emrearmagan/go-social/models"
+	"github.com/emrearmagan/go-social/models/errors"
 )
 
 // APIError represents a Dribbble API error with its corresponding http StatusCode response
@@ -54,12 +54,12 @@ func (e *APIError) SetStatus(code int) {
 func (e *APIError) ReturnErrorResponse() error {
 	switch e.Status() {
 	case 401, 403: // Invalid or expired token (if token has been revoked) - The access token used in the request is incorrect or has expired.
-		return models.ErrUnauthorized
+		return errors.New(errors.ErrUnauthorized, e.Error())
 	case 429: // Rate limit exceeded	 - The request limit for this resource has been reached for the current rate limit window.
-		return models.ErrRateLimit
+		return errors.New(errors.ErrRateLimit, e.Error())
 	case 500, 502, 503: //Internal api error
-		return models.ErrApiError
+		return errors.New(errors.ErrApiError, e.Error())
 
 	}
-	return models.ErrUnknownError
+	return errors.New(errors.ErrUnknownError, e.Error())
 }
