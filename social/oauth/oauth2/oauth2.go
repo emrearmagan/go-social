@@ -140,6 +140,10 @@ func (a *OAuth2) Client() *social.HttpClient {
 	return a.client
 }
 
+func (a *OAuth2) Token() *Token {
+	return a.token
+}
+
 func (a *OAuth2) UpdateToken(token *Token) {
 	a.token = token
 }
