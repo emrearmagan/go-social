@@ -38,6 +38,16 @@ func (f *FollowerService) FollowerIDs(params *FollowerIDParams) (*UserFollowerID
 	return ids, social.CheckError(err)
 }
 
+// FollowingIDs returns a cursored collection of Users the authorized user is following.
+// https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-friends-ids
+func (f *FollowerService) FollowingIDs(params *FollowerIDParams) (*UserFollowerIDs, error) {
+	ids := new(UserFollowerIDs)
+	apiError := new(APIError)
+
+	err := f.oauth1.Get(FollowingIdsPath, ids, apiError, params)
+	return ids, social.CheckError(err)
+}
+
 // FollowerIDParams are the parameters for IDs
 type FollowerIDParams struct {
 	UserID     int64  `url:"user_id,omitempty"`

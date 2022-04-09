@@ -220,7 +220,7 @@ func (c *HttpClient) Do(req *http.Request, success interface{}, failure interfac
 
 	// when err is nil, resp contains a non-nil resp.Body which must be closed
 	defer resp.Body.Close()
-
+	
 	/*bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
