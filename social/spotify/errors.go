@@ -15,7 +15,7 @@ import (
 // https://developer.spotify.com/documentation/web-api/
 type APIError struct {
 	StatusCode int
-	Errors     ErrorDetail `json:"error"`
+	Errors     ErrorDetail
 }
 
 // ErrorDetail represents the actual error response from the Api
@@ -34,7 +34,7 @@ func (e *APIError) ErrorDetail() interface{} {
 
 func (e *APIError) Error() string {
 	if (e.Errors != ErrorDetail{}) {
-		return fmt.Sprintf("Spotify: %d - %v", e.StatusCode, e.Errors.ErrorStruct.Message)
+		return fmt.Sprintf("Spotify: %d - %v", e.Errors.ErrorStruct.StatusCode, e.Errors.ErrorStruct.Message)
 	}
 	return ""
 }

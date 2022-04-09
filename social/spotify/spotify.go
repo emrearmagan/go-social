@@ -24,7 +24,7 @@ type Client struct {
 	Follower *FollowerService
 }
 
-// NewClient returns a new Dribbble Client.
+// NewClient returns a new Spotify Client.
 func NewClient(oauth *oauth2.OAuth2) *Client {
 	oauth = oauth.NewClient(oauth.Client().Base(Base))
 	oauth.AuthorizationPrefix = AuthorizationPrefix

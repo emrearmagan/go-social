@@ -21,7 +21,7 @@ type Client struct {
 	User    *UserService
 }
 
-// NewClient returns a new Dribbble Client.
+// NewClient returns a new Reddit Client.
 func NewClient(oauth *oauth2.OAuth2, userAgent string) *Client {
 	//TODO: Create client here and add the header before adding it to the oauth.
 	// That way i dont need to put the user agent every where

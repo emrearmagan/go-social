@@ -31,7 +31,7 @@ func (e *APIError) ErrorDetail() interface{} {
 
 func (e *APIError) Error() string {
 	if len(e.Errors.Message) > 0 {
-		return fmt.Sprintf("Reddit: %d - %v", e.StatusCode, e.Errors)
+		return fmt.Sprintf("Reddit: %d - %v", e.Errors.ErrorCode, e.Errors)
 	}
 	return ""
 }
