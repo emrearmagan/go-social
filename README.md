@@ -22,7 +22,7 @@ go-social is a Go client library for the various social media APIs. Which is cur
 </p>
 
 ### Endpoints
-- Twitter API 
+- Twitter API
   - User Credentials
   - Follower IDs
   - Following IDs
@@ -59,18 +59,18 @@ You can also provide a config file to load your credentials and token. See [Conf
 ```go
 // pass config file
 flag.StringVar(&ConfigPath, "c", "./config/config_example.json", "Specified the config file for running server. Default is the \"config_example\" in the config directory.")
-flag.Parse() 
+flag.Parse()
 
 //load config
 accounts, err := config.LoadConfig(ConfigPath)
 if err != nil {
     log.Fatal(err.Error())
 }
-    
+
 conf := oauth2.NewOAuth(context.TODO(), &accounts.Spotify.Credentials, &accounts.Spotify.Token)
 ```
 ### Access API
-Afterwards each social media package provides a Client with a corresponding service for accessing the API. 
+Afterwards each social media package provides a Client with a corresponding service for accessing the API.
 ```go
 spotify := spotify.NewClient(conf)
 
@@ -114,7 +114,6 @@ Each API Error code is mapped to models.Error structs which will provide additio
 ```go
 _, err = spotify.User.UserCredentials()
     if err != nil {
-        // Logging the error
         if e, ok := err.(errors.SocialError); ok {
             switch e.Errors {
             case errors.ErrBadRequest:
@@ -131,6 +130,7 @@ _, err = spotify.User.UserCredentials()
                 // Some other error
             }
         }
+        // Logging the error
         fmt.Println(err.Error())
         return
     }
@@ -146,11 +146,13 @@ Most access tokens typically have a limited lifetime such as the `Spotify` API. 
 Calling the refresh Method automatically sets the new access token so that further API calls become valid again.
 ```go
 if _, err := spotify.User.UserCredentials(); err != nil {
+  if e, ok := err.(errors.SocialError); ok {
     //Access token expired
-    if err == models.ErrUnauthorized {
-        newToken, _ := spotify.Account.RefreshToken()
-        fmt.Printf("Refreshed Token: %v \n\n", newToken)
+    if e.Errors == models.ErrUnauthorized {
+      newToken, _ := spotify.Account.RefreshToken()
+      fmt.Printf("Refreshed Token: %v \n\n", newToken)
     }
+  }
 }
 
 // Access token updated, do request with the updated token
