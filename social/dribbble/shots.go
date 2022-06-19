@@ -34,7 +34,7 @@ func (s *ShotService) DribbbleShots() (*Shots, error) {
 	shots := new(Shots)
 	apiError := new(APIError)
 
-	err := s.oauth2.Get(UserPath, shots, apiError, nil)
+	err := s.oauth2.Get(ShotsPath, shots, apiError, nil)
 
 	return shots, social.CheckError(err)
 }
@@ -55,4 +55,54 @@ type Shots []struct {
 	PublishedAt time.Time `json:"published_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 	HTMLURL     string    `json:"html_url"`
+	Animated    bool      `json:"animated"`
+	Tags        []string  `json:"tags"`
+	Attachments []struct {
+		ID           int       `json:"id"`
+		URL          string    `json:"url"`
+		ThumbnailURL string    `json:"thumbnail_url"`
+		Size         int       `json:"size"`
+		ContentType  string    `json:"content_type"`
+		CreatedAt    time.Time `json:"created_at"`
+	} `json:"attachments"`
+	Projects []struct {
+		ID          int       `json:"id"`
+		Name        string    `json:"name"`
+		Description string    `json:"description"`
+		ShotsCount  int       `json:"shots_count"`
+		CreatedAt   time.Time `json:"created_at"`
+		UpdatedAt   time.Time `json:"updated_at"`
+	} `json:"projects"`
+	Team struct {
+		ID        int    `json:"id"`
+		Name      string `json:"name"`
+		Login     string `json:"login"`
+		HTMLURL   string `json:"html_url"`
+		AvatarURL string `json:"avatar_url"`
+		Bio       string `json:"bio"`
+		Location  string `json:"location"`
+		Links     struct {
+			Web     string `json:"web"`
+			Twitter string `json:"twitter"`
+		} `json:"links"`
+		Type      string    `json:"type"`
+		CreatedAt time.Time `json:"created_at"`
+		UpdatedAt time.Time `json:"updated_at"`
+	} `json:"team"`
+	Video struct {
+		ID               int       `json:"id"`
+		Duration         int       `json:"duration"`
+		VideoFileName    string    `json:"video_file_name"`
+		VideoFileSize    int       `json:"video_file_size"`
+		Width            int       `json:"width"`
+		Height           int       `json:"height"`
+		Silent           bool      `json:"silent"`
+		CreatedAt        time.Time `json:"created_at"`
+		UpdatedAt        time.Time `json:"updated_at"`
+		URL              string    `json:"url"`
+		SmallPreviewURL  string    `json:"small_preview_url"`
+		LargePreviewURL  string    `json:"large_preview_url"`
+		XlargePreviewURL string    `json:"xlarge_preview_url"`
+	} `json:"video"`
+	LowProfile bool `json:"low_profile"`
 }
