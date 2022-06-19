@@ -69,3 +69,54 @@ func (e *APIError) ReturnErrorResponse() error {
 	}
 	return errors.New(errors.ErrUnknownError, e.Error())
 }
+
+//RefreshError
+type RefreshError struct {
+	StatusCode int
+	Errors     RefreshDetail
+}
+
+type RefreshDetail struct {
+	Error            string `json:"error"`
+	ErrorDescription string `json:"error_description"`
+}
+
+func (e *RefreshError) ErrorDetail() interface{} {
+	return &e.Errors
+}
+
+func (e *RefreshError) Error() string {
+	if (e.Errors != RefreshDetail{}) {
+		return fmt.Sprintf("Spotify: %d - %v : %v", e.StatusCode, e.Errors.Error, e.Errors.ErrorDescription)
+	}
+	return ""
+}
+
+// Empty returns true if empty. Otherwise, at least 1 error message/code is
+// present and false is returned.
+func (e *RefreshError) Empty() bool {
+	if (e.Errors == RefreshDetail{}) {
+		return true
+	}
+	return false
+}
+
+func (e *RefreshError) Status() int {
+	return e.StatusCode
+}
+
+func (e *RefreshError) SetStatus(code int) {
+	e.StatusCode = code
+}
+
+func (e *RefreshError) ReturnErrorResponse() error {
+	switch e.Status() {
+	case 401, 403: // Invalid or expired token (if token has been revoked) - The access token used in the request is incorrect or has expired.
+		return errors.New(errors.ErrUnauthorized, e.Error())
+	case 429: // Rate limit exceeded	 - The request limit for this resource has been reached for the current rate limit window.
+		return errors.New(errors.ErrRateLimit, e.Error())
+	case 500, 502, 503: //Internal api error
+		return errors.New(errors.ErrApiError, e.Error())
+	}
+	return errors.New(errors.ErrUnknownError, e.Error())
+}

@@ -46,7 +46,7 @@ func NewClient(oauth *oauth2.OAuth2) *Client {
 // https://developer.spotify.com/documentation/general/guides/authorization-guide/
 func (c *Client) RefreshToken() (*oauth2.OAuthRefreshResponse, error) {
 	oauthResp := new(OAuth2Response)
-	apiError := new(APIError)
+	apiError := new(RefreshError)
 
 	err := c.oauth2.RefreshToken(RefreshBase, RefreshPath, oauthResp, apiError)
 	c.oauth2.UpdateToken(oauth2.NewToken(oauthResp.AccessToken, c.oauth2.Token().RefreshToken))

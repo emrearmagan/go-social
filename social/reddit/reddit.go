@@ -23,6 +23,8 @@ type Client struct {
 	User    *UserService
 }
 
+//TODO: Reddit return an HTML page for error. How to handle ?
+
 // NewClient returns a new Reddit Client.
 func NewClient(oauth *oauth2.OAuth2, userAgent string) *Client {
 	client := oauth.Client().New().Base(Base)
