@@ -8,9 +8,9 @@ package oauth2
 
 type OAuthRefreshResponse struct {
 	Token     Token
-	TokenType string `json:"token_type"`
-	ExpiresIn int    `json:"expires_in"`
-	Scope     string `json:"scope"`
+	TokenType string   `json:"token_type"`
+	ExpiresIn int      `json:"expires_in"`
+	Scope     []string `json:"scope"`
 }
 
 // Token represents an OAuth1 AccessToken (Token credentials) and secret

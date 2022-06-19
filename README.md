@@ -22,27 +22,32 @@ go-social is a Go client library for the various social media APIs. Which is cur
 </p>
 
 ### Endpoints
-- Twitter API
+- Twitter
   - User Credentials
   - Follower IDs
   - Following IDs
-- Dribbble API:
+- Dribbble
   - User Credentials
   - User Shots
-- Github API:
+- Github
     - User Credentials
     - User Shots
     - Follower IDs
     - Following IDs
-- Reddit API
+- Reddit
   - User Credentials
   - Refresh token
-- Spotify API
+- Spotify
   - User Credentials
   - Followed Artists
   - Refresh token
   - User Playlist
-- Tumblr API
+- Twitch
+  - User Credentials
+  - Follower/Following
+  - Subscribers
+  - Refresh token
+- Tumblr
   - User Credentials
 
 ## Usage
@@ -149,7 +154,7 @@ if _, err := spotify.User.UserCredentials(); err != nil {
   if e, ok := err.(errors.SocialError); ok {
     //Access token expired
     if e.Errors == models.ErrUnauthorized {
-      newToken, _ := spotify.Account.RefreshToken()
+      newToken, _ := spotify.RefreshToken()
       fmt.Printf("Refreshed Token: %v \n\n", newToken)
     }
   }

@@ -46,6 +46,7 @@ func NewOAuth(ctx context.Context, c *oauth.Credentials, token *Token) *OAuth2 {
 	}
 }
 
+// NewClient return a new OAuth2 with a new client
 func (a *OAuth2) NewClient(client *social.HttpClient) *OAuth2 {
 	return &OAuth2{
 		ctx:                 a.ctx,
@@ -63,6 +64,7 @@ func (a *OAuth2) Get(path string, resp interface{}, apiError social.ApiErrors, p
 	if err != nil {
 		return err
 	}
+
 	req = req.WithContext(a.ctx)
 	for k, v := range a.oAuthParams() {
 		req.Header.Set(k, v)
@@ -94,7 +96,7 @@ func (a *OAuth2) RefreshToken(refreshBase string, path string, resp interface{},
 	if err != nil {
 		return err
 	}
-
+	req = req.WithContext(a.ctx)
 	req, err = a.signRequest(req)
 	if err != nil {
 		return err
@@ -139,6 +141,10 @@ func (a *OAuth2) Token() *Token {
 
 func (a *OAuth2) UpdateToken(token *Token) {
 	a.token = token
+}
+
+func (a *OAuth2) Credentials() oauth.Credentials {
+	return *a.credentials
 }
 
 // oauthParams returns the OAuth2 header parameters for the given credentials
