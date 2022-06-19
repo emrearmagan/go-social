@@ -36,6 +36,5 @@ func CheckError(err error) error {
 	case error:
 		return err
 	}
-
 	return nil
 }

@@ -20,7 +20,7 @@ type APIError struct {
 
 // ErrorDetail represents the actual error response from the Api
 type ErrorDetail struct {
-	ErrorStruct []ErrorStruct `json:"error"`
+	ErrorStruct []ErrorStruct `json:"errors"`
 }
 
 type ErrorStruct struct {
