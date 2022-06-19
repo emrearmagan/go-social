@@ -9,6 +9,7 @@ package reddit
 import (
 	"github.com/emrearmagan/go-social/oauth/oauth2"
 	"github.com/emrearmagan/go-social/social"
+	"strings"
 )
 
 const (
@@ -44,7 +45,7 @@ func (a *AccountService) RefreshToken() (*oauth2.OAuthRefreshResponse, error) {
 		},
 		TokenType: oauthResp.TokenType,
 		ExpiresIn: oauthResp.ExpiresIn,
-		Scope:     oauthResp.Scope,
+		Scope:     strings.Fields(oauthResp.Scope),
 	}, social.CheckError(err)
 }
 
