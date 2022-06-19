@@ -89,7 +89,7 @@ func (a *OAuth2) oAuthParams() map[string]string {
 }
 
 func (a *OAuth2) RefreshToken(refreshBase string, path string, resp interface{}, apiError social.ApiErrors) error {
-	// Using a new http client so we don't mess up the base path for other requests.
+	// Using a new http client, so we don't mess up the base path for other requests.
 	// Since some APIs use a different base path for refreshing tokens, like reddit
 	client := a.client.New().Base(refreshBase).Post(path)
 	req, err := client.Request()
@@ -101,6 +101,24 @@ func (a *OAuth2) RefreshToken(refreshBase string, path string, resp interface{},
 	if err != nil {
 		return err
 	}
+
+	httpResp, err := client.Do(req, resp, apiError.ErrorDetail())
+	if httpResp != nil {
+		if code := httpResp.StatusCode; code >= 300 {
+			apiError.SetStatus(httpResp.StatusCode)
+		}
+	}
+	return social.RelevantError(err, apiError)
+}
+
+func (a *OAuth2) RevokeToken(revokeBase string, path string, resp interface{}, apiError social.ApiErrors) error {
+	client := a.client.New().Base(revokeBase).Post(path)
+	req, err := client.Request()
+	if err != nil {
+		return err
+	}
+
+	req = req.WithContext(a.ctx)
 
 	httpResp, err := client.Do(req, resp, apiError.ErrorDetail())
 	if httpResp != nil {

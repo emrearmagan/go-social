@@ -221,7 +221,15 @@ func (c *HttpClient) Do(req *http.Request, success interface{}, failure interfac
 	// when err is nil, resp contains a non-nil resp.Body which must be closed
 	defer resp.Body.Close()
 
-	/*bodyBytes, err := ioutil.ReadAll(resp.Body)
+	//Only for debugging purposes
+	/*reqDump, err := httputil.DumpRequestOut(req, true)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("REQUEST:\n%s", string(reqDump))
+
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -240,7 +248,7 @@ func (c *HttpClient) Do(req *http.Request, success interface{}, failure interfac
 	}
 
 	// Decode from json
-	if success != nil {
+	if success != nil || failure != nil {
 		err = decodeResponse(resp, c.responseDecoder, success, failure)
 	}
 	return resp, err

@@ -25,7 +25,6 @@ func RelevantError(httpError error, apiError ApiErrors) error {
 	if apiError.Empty() {
 		return nil
 	}
-
 	return apiError
 }
 

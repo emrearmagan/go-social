@@ -20,19 +20,20 @@ type Client struct {
 }
 
 const (
-	Base = "https://api.twitch.tv/"
+	APIBase = "https://api.twitch.tv/"
 
 	AuthorizationPrefix = "Bearer " // trailing space is required
 	ClientHeaderName    = "Client-Id"
 
-	RefreshBase = "https://id.twitch.tv"
-	RefreshPath = "/oauth2/token"
+	RefreshRevokeBase = "https://id.twitch.tv/"
+	RefreshPath       = "/oauth2/token"
+	RevokePath        = "/oauth2/revoke"
 )
 
 // NewClient returns a new Twitter Client.
 func NewClient(oauth *oauth2.OAuth2) *Client {
 	// Twitch requires the client id to be in the header. At least for the endpoints implemented here
-	tclient := oauth.Client().Base(Base)
+	tclient := oauth.Client().Base(APIBase)
 	tclient.Add(ClientHeaderName, oauth.Credentials().ConsumerKey)
 
 	oauth = oauth.NewClient(tclient)
@@ -64,7 +65,7 @@ func (c *Client) RefreshToken() (*oauth2.OAuthRefreshResponse, error) {
 	})
 	oauth := c.oauth2.NewClient(rclient)
 
-	err := oauth.RefreshToken(RefreshBase, RefreshPath, oauthResp, apiError)
+	err := oauth.RefreshToken(RefreshRevokeBase, RefreshPath, oauthResp, apiError)
 	c.oauth2.UpdateToken(oauth2.NewToken(oauthResp.AccessToken, oauthResp.RefreshToken))
 	return &oauth2.OAuthRefreshResponse{
 		Token: oauth2.Token{
@@ -75,6 +76,27 @@ func (c *Client) RefreshToken() (*oauth2.OAuthRefreshResponse, error) {
 		ExpiresIn: oauthResp.ExpiresIn,
 		Scope:     oauthResp.Scope,
 	}, social.CheckError(err)
+}
+
+// Revoke If your app no longer needs an access token.
+// Returns 400 Bad Request if the client ID is valid but the access token is not
+// Returns 404 Not Found if the client ID is not valid.
+func (c *Client) Revoke() error {
+	apiError := new(APIError)
+
+	// Twitch requires the client id and secret to be in the body of the request.
+	rclient := c.oauth2.Client()
+	rclient.AddQuery(struct {
+		ClientId string `url:"client_id"`
+		Token    string `url:"token"`
+	}{
+		ClientId: c.oauth2.Credentials().ConsumerKey,
+		Token:    c.oauth2.Token().Token,
+	})
+
+	oauth := c.oauth2.NewClient(rclient)
+	err := oauth.RevokeToken(RefreshRevokeBase, RevokePath, nil, apiError)
+	return social.CheckError(err)
 }
 
 type OAuth2Response struct {

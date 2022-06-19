@@ -59,6 +59,8 @@ func (e *APIError) ReturnErrorResponse() error {
 		return errors.New(errors.ErrBadRequest, e.Error())
 	case 401, 403: // Unauthenticated: Missing/invalid Token or missing scopes
 		return errors.New(errors.ErrUnauthorized, e.Error())
+	case 404:
+		return errors.New(errors.ErrNotFound, e.Error())
 	case 429: // Rate limit exceeded	 - The request limit for this resource has been reached for the current rate limit window.
 		return errors.New(errors.ErrRateLimit, e.Error())
 	case 500, 502, 503: //Internal api error

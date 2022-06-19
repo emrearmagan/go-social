@@ -50,6 +50,9 @@ func (e *APIError) Empty() bool {
 }
 
 func (e *APIError) Status() int {
+	if len(e.Errors.ErrorStruct) > 0 {
+		return e.Errors.ErrorStruct[0].Code
+	}
 	return e.StatusCode
 }
 
