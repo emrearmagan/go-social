@@ -47,6 +47,7 @@ go-social is a Go client library for the various social media APIs. Which is cur
   - Follower/Following
   - Subscribers
   - Refresh token
+  - Revoke Token
 - Tumblr
   - User Credentials
 

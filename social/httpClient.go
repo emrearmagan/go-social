@@ -30,7 +30,7 @@ type HttpClient struct {
 	// HTTP Body
 	body io.Reader
 	// response decoder: default json decoder
-	responseDecoder ResponseDecoder
+	ResponseDecoder ResponseDecoder
 }
 
 // NewHttpClient returns a new http client with a http DefaultClient.
@@ -40,7 +40,7 @@ func NewHttpClient() *HttpClient {
 		method:          http.MethodGet,
 		header:          make(http.Header),
 		query:           make([]interface{}, 0),
-		responseDecoder: jsonDecoder{},
+		ResponseDecoder: jsonDecoder{},
 	}
 }
 
@@ -65,7 +65,7 @@ func (c *HttpClient) New() *HttpClient {
 		rawURL:          c.rawURL,
 		header:          headerCopy,
 		query:           append([]interface{}{}, c.query...),
-		responseDecoder: c.responseDecoder,
+		ResponseDecoder: c.ResponseDecoder,
 	}
 }
 
@@ -246,10 +246,9 @@ func (c *HttpClient) Do(req *http.Request, success interface{}, failure interfac
 	if resp.StatusCode == http.StatusNoContent {
 		return resp, nil
 	}
-
 	// Decode from json
 	if success != nil || failure != nil {
-		err = decodeResponse(resp, c.responseDecoder, success, failure)
+		err = decodeResponse(resp, c.ResponseDecoder, success, failure)
 	}
 	return resp, err
 }

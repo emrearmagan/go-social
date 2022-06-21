@@ -23,12 +23,14 @@ type Client struct {
 	User    *UserService
 }
 
-//TODO: Reddit return an HTML page for error. How to handle ?
-
 // NewClient returns a new Reddit Client.
+// Reddit API requires the UserAgent header for the authenticated application.
+// It is usually in the form of: 'platform:name:1.0 (by /u/username)'. Platform would be for example ios for an registered ios application. I don't know about the other platforms
 func NewClient(oauth *oauth2.OAuth2, userAgent string) *Client {
 	client := oauth.Client().New().Base(Base)
 	client.Set(UserAgentHeaderKey, userAgent)
+	client.ResponseDecoder = redditDecoder{}
+
 	oauth = oauth.NewClient(client)
 	oauth.AuthorizationPrefix = AuthorizationPrefix
 	return &Client{

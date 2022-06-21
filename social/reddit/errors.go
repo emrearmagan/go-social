@@ -11,18 +11,10 @@ import (
 	"github.com/emrearmagan/go-social/models/errors"
 )
 
-//TODO: Reddit errors are not properly handled. Sometimes instead of an error html is returned
-
 // APIError represents a Reddit API error with its corresponding http StatusCode response
 type APIError struct {
 	StatusCode int
-	Errors     ErrorDetail
-}
-
-// ErrorDetail represents the actual error response from the Api
-type ErrorDetail struct {
-	Message   string `json:"message"`
-	ErrorCode int    `json:"error"`
+	Errors     interface{}
 }
 
 func (e *APIError) ErrorDetail() interface{} {
@@ -30,19 +22,12 @@ func (e *APIError) ErrorDetail() interface{} {
 }
 
 func (e *APIError) Error() string {
-	if len(e.Errors.Message) > 0 {
-		return fmt.Sprintf("Reddit: %d - %v", e.Errors.ErrorCode, e.Errors)
-	}
-	return ""
+	return fmt.Sprintf("Reddit: %d", e.StatusCode)
 }
 
-// Empty returns true if empty. Otherwise, at least 1 error message/code is
-// present and false is returned.
+// Empty returns true if nil. Otherwise, at least 1 error message/code is
 func (e *APIError) Empty() bool {
-	if len(e.Errors.Message) == 0 {
-		return true
-	}
-	return false
+	return e.ErrorDetail() == nil
 }
 
 func (e *APIError) Status() int {
