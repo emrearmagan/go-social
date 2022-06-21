@@ -76,6 +76,7 @@ func (a *OAuth2) Get(path string, resp interface{}, apiError social.ApiErrors, p
 			apiError.SetStatus(httpResp.StatusCode)
 		}
 	}
+
 	return social.RelevantError(err, apiError)
 }
 
@@ -175,6 +176,5 @@ func (a *OAuth2) oAuthSigningParams() map[string]string {
 }
 
 func (a *OAuth2) authorizationHeaderValue() string {
-	//TODO:.... do all use basic ?
 	return BasicAuthorizationPrefix + base64Enc(fmt.Sprintf("%s:%s", a.credentials.ConsumerKey, a.credentials.ConsumerSecret))
 }

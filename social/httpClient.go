@@ -250,6 +250,7 @@ func (c *HttpClient) Do(req *http.Request, success interface{}, failure interfac
 	if success != nil || failure != nil {
 		err = decodeResponse(resp, c.ResponseDecoder, success, failure)
 	}
+
 	return resp, err
 }
 

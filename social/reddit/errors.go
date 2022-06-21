@@ -27,7 +27,7 @@ func (e *APIError) Error() string {
 
 // Empty returns true if nil. Otherwise, at least 1 error message/code is
 func (e *APIError) Empty() bool {
-	return e.ErrorDetail() == nil
+	return e.Errors == nil
 }
 
 func (e *APIError) Status() int {
