@@ -59,7 +59,7 @@ Initialize the required configuration for each account.
 ```go
 cred := oauth.NewCredentials("CONSUMER_KEY", "CONSUMER_SECRET")
 token := oauth2.NewToken("ACCESS_TOKEN", "REFRESH_TOKEN")
-config := oauth2.NewOAuth(context.TODO(), cred, token)
+client := github.NewClient(context.TODO(), cred, token)
 ```
 You can also provide a config file to load your credentials and token. See [Config](./config/config_example.json) for an example.
 ```go
@@ -73,12 +73,13 @@ if err != nil {
     log.Fatal(err.Error())
 }
 
-conf := oauth2.NewOAuth(context.TODO(), &accounts.Spotify.Credentials, &accounts.Spotify.Token)
+client := github.NewClient(context.TODO(), &cred, &token, nil)
 ```
 ### Access API
 Afterwards each social media package provides a Client with a corresponding service for accessing the API.
 ```go
-spotify := spotify.NewClient(conf)
+spotify := spotify.NewClient(context.TODO(), cred, token)
+
 
 //Use UserService for User related API calls
 u, err := spotify.User.UserCredentials()
@@ -181,15 +182,15 @@ type ErrorStruct struct {
     Message string `json:"message"`
 }
 
+// Either use the build in http client or create your own
+httpClient := client.NewHttpClient().Base("https://api.somesite.com").Path("/v1")
+httpClient.Set("User-Agent", "go/go-social")
+
 cred := oauth.NewCredentials("CONSUMER_KEY", "CONSUMER_SECRET")
 token := oauth1.NewToken("TOKEN", "TOKEN_SECRET")
-auth := oauth1.NewOAuth(context.TODO(), cred, token)
-
-// Either use the build in http client or create your own
-httpClient := social.NewHttpClient().Base("https://api.somesite.com/v2/")
-httpClient.Set("User-Agent", "go/go-social")
 // Set the http client for further requests
-auth = auth.NewClient(httpClient)
+auther := oauth2.NewOAuth(context.TODO(), cred, token, httpClient)
+
 // Initialize your own response and error struct
 resp := new(CustomStruct)
 apiError := new(ErrorStruct)
@@ -197,7 +198,7 @@ apiError := new(ErrorStruct)
 // Make the request. Request will be automatically signed using the default HMAC Signer.
 err := auth.Get("/me/user", resp, apiError, nil)
 if err != nil {
-    log.Fatal(err.Error())
+log.Fatal(err.Error())
 }
 // do something with `resp`
 ```
