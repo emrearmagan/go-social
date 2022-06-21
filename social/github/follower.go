@@ -12,8 +12,7 @@ import (
 )
 
 const (
-	FollowerPath  = "/user/followers"
-	FollowingPath = "/user/following"
+	FollowerPath = "/user/followers"
 )
 
 // FollowerService provides methods for follower information
@@ -38,18 +37,9 @@ func (f *FollowerService) FollowerIds(cursor int64, max *int) (*FollowersIdRespo
 		PerPage: max,
 		Page:    int(cursor),
 	}
+
 	err := f.oauth2.Get(FollowerPath, followers, apiError, params)
 	return followers, social.CheckError(err)
-}
-
-// FollowingIds returns the ids of the following for the authenticated user.
-// https://docs.github.com/en/rest/reference/users#list-the-people-the-authenticated-user-follows
-func (f *FollowerService) FollowingIds(params *UserFollowerIdParams) (*FollowersIdResponse, error) {
-	following := new(FollowersIdResponse)
-	apiError := new(APIError)
-
-	err := f.oauth2.Get(FollowerPath, following, apiError, params)
-	return following, social.CheckError(err)
 }
 
 // UserFollowerIdParams are the parameters for FollowerIds and FollowingIds

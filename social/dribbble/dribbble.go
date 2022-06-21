@@ -7,14 +7,16 @@ Copyright © go-social. All rights reserved.
 package dribbble
 
 import (
+	"context"
 	"github.com/emrearmagan/go-social/models"
+	"github.com/emrearmagan/go-social/oauth"
 	"github.com/emrearmagan/go-social/oauth/oauth2"
+	"github.com/emrearmagan/go-social/social/client"
 	"strconv"
 )
 
 const (
-	Base                = "https://api.dribbble.com/"
-	AuthorizationPrefix = "Bearer " // trailing space is required
+	Base = "https://api.dribbble.com/"
 )
 
 type Client struct {
@@ -23,12 +25,12 @@ type Client struct {
 }
 
 // NewClient returns a new Dribbble Client.
-func NewClient(oauth *oauth2.OAuth2) *Client {
-	oauth = oauth.NewClient(oauth.Client().Base(Base))
-	oauth.AuthorizationPrefix = AuthorizationPrefix
+func NewClient(ctx context.Context, c *oauth.Credentials, token *oauth2.Token) *Client {
+	cl := client.NewHttpClient().Base(Base)
+	auther := oauth2.NewOAuth(ctx, c, token, cl)
 	return &Client{
-		User:  newUserService(oauth),
-		Shots: newShotService(oauth),
+		User:  newUserService(auther),
+		Shots: newShotService(auther),
 	}
 }
 

@@ -8,6 +8,6 @@ package oauth2
 
 import "encoding/base64"
 
-func base64Enc(cs string) string {
+func Base64Enc(cs string) string {
 	return base64.StdEncoding.EncodeToString([]byte(cs))
 }

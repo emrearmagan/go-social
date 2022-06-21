@@ -22,9 +22,9 @@ type ShotService struct {
 }
 
 // newUserService returns a new AccountService.
-func newShotService(oauth2 *oauth2.OAuth2) *ShotService {
+func newShotService(auther *oauth2.OAuth2) *ShotService {
 	return &ShotService{
-		oauth2: oauth2,
+		oauth2: auther,
 	}
 }
 

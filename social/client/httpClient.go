@@ -4,10 +4,9 @@ Created at 08.04.22 by emrearmagan
 Copyright © go-social. All rights reserved.
 */
 
-package social
+package client
 
 import (
-	"encoding/json"
 	"github.com/google/go-querystring/query"
 	"io"
 	"io/ioutil"
@@ -30,7 +29,7 @@ type HttpClient struct {
 	// HTTP Body
 	body io.Reader
 	// response decoder: default json decoder
-	ResponseDecoder ResponseDecoder
+	responseDecoder ResponseDecoder
 }
 
 // NewHttpClient returns a new http client with a http DefaultClient.
@@ -40,11 +39,11 @@ func NewHttpClient() *HttpClient {
 		method:          http.MethodGet,
 		header:          make(http.Header),
 		query:           make([]interface{}, 0),
-		ResponseDecoder: jsonDecoder{},
+		responseDecoder: jsonDecoder{},
 	}
 }
 
-// parentClient := client.New().Base("https://api.de/")
+// New parentClient := client.New().Base("https://api.de/")
 // childClient1 := parentClient.New().Get("foo/")
 // childClient2 := parentClient.New().POST("bar/")
 //
@@ -65,7 +64,7 @@ func (c *HttpClient) New() *HttpClient {
 		rawURL:          c.rawURL,
 		header:          headerCopy,
 		query:           append([]interface{}{}, c.query...),
-		ResponseDecoder: c.ResponseDecoder,
+		responseDecoder: c.responseDecoder,
 	}
 }
 
@@ -102,6 +101,11 @@ func (c *HttpClient) AddQuery(query interface{}) *HttpClient {
 	if query != nil {
 		c.query = append(c.query, query)
 	}
+	return c
+}
+
+func (c *HttpClient) Decoder(coder ResponseDecoder) *HttpClient {
+	c.responseDecoder = coder
 	return c
 }
 
@@ -248,7 +252,7 @@ func (c *HttpClient) Do(req *http.Request, success interface{}, failure interfac
 	}
 	// Decode from json
 	if success != nil || failure != nil {
-		err = decodeResponse(resp, c.ResponseDecoder, success, failure)
+		err = decodeResponse(resp, c.responseDecoder, success, failure)
 	}
 
 	return resp, err
@@ -268,19 +272,4 @@ func decodeResponse(resp *http.Response, decoder ResponseDecoder, success interf
 		return decoder.Decode(resp, failure)
 	}
 	return nil
-}
-
-// ResponseDecoder decodes http responses into struct values.
-type ResponseDecoder interface {
-	// Decode decodes the response into the value pointed to by v.
-	Decode(resp *http.Response, v interface{}) error
-}
-
-// jsonDecoder decodes http response JSON into a JSON-tagged struct value.
-type jsonDecoder struct{}
-
-// Decode decodes the Response Body into the value pointed to by v.
-// Caller must provide a non-nil v and close the resp.Body.
-func (d jsonDecoder) Decode(resp *http.Response, v interface{}) error {
-	return json.NewDecoder(resp.Body).Decode(v)
 }

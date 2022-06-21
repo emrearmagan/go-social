@@ -8,10 +8,10 @@ package oauth2
 
 import (
 	"context"
-	"fmt"
 	"github.com/emrearmagan/go-social/models/errors"
 	"github.com/emrearmagan/go-social/oauth"
 	"github.com/emrearmagan/go-social/social"
+	"github.com/emrearmagan/go-social/social/client"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -19,58 +19,84 @@ import (
 	"strings"
 )
 
-const (
-	AuthorizationHeaderName = "Authorization"
-	ContentTypeHeaderName   = "Content-Type"
-	ContentLengthHeaderName = "Content-Length"
-
-	BasicAuthorizationPrefix = "Basic " // trailing space is required
-)
-
 type OAuth2 struct {
 	ctx         context.Context
 	credentials *oauth.Credentials
+	client      *client.HttpClient
 	token       *Token
-	client      *social.HttpClient
-
-	AuthorizationPrefix string
+	signer      Signer
 }
 
-func NewOAuth(ctx context.Context, c *oauth.Credentials, token *Token) *OAuth2 {
+func NewOAuth(ctx context.Context, c *oauth.Credentials, token *Token, cl *client.HttpClient) *OAuth2 {
 	return &OAuth2{
-		ctx:                 ctx,
-		credentials:         c,
-		token:               token,
-		client:              social.NewHttpClient(),
-		AuthorizationPrefix: BasicAuthorizationPrefix,
+		ctx:         ctx,
+		credentials: c,
+		token:       token,
+		client:      cl,
+		signer: BearerSigner{
+			ConsumerKey:    c.ConsumerKey,
+			ConsumerSecret: c.ConsumerSecret,
+		},
 	}
 }
 
-// NewClient return a new OAuth2 with a new client
-func (a *OAuth2) NewClient(client *social.HttpClient) *OAuth2 {
+// New return a copy of OAuth2 object
+func (a *OAuth2) New() *OAuth2 {
 	return &OAuth2{
-		ctx:                 a.ctx,
-		credentials:         a.credentials,
-		token:               a.token,
-		client:              client,
-		AuthorizationPrefix: a.AuthorizationPrefix,
+		ctx:         a.ctx,
+		credentials: a.credentials,
+		token:       a.token,
+		client:      a.client,
+		signer:      a.signer,
+	}
+}
+
+// NewClient return a new OAuth2 with a new given client
+func (a *OAuth2) NewClient(client *client.HttpClient) *OAuth2 {
+	return &OAuth2{
+		ctx:         a.ctx,
+		credentials: a.credentials,
+		token:       a.token,
+		client:      client,
+		signer:      a.signer,
+	}
+}
+
+// Basic return a new OAuth2 with a basic authentication
+func (a *OAuth2) Basic() *OAuth2 {
+	return &OAuth2{
+		ctx:         a.ctx,
+		credentials: a.credentials,
+		token:       a.token,
+		client:      a.client,
+		signer:      BasicSigner{ConsumerKey: a.credentials.ConsumerKey, ConsumerSecret: a.credentials.ConsumerSecret},
+	}
+}
+
+// Signer sets a Signer for signing the oauth requests
+func (a *OAuth2) Signer(s Signer) *OAuth2 {
+	return &OAuth2{
+		ctx:         a.ctx,
+		credentials: a.credentials,
+		token:       a.token,
+		client:      a.client,
+		signer:      s,
 	}
 }
 
 func (a *OAuth2) Get(path string, resp interface{}, apiError social.ApiErrors, params interface{}) error {
-	client := a.client.AddQuery(params).Get(path)
-
-	req, err := a.client.Request()
+	cl := a.client.AddQuery(params).Get(path)
+	req, err := cl.Request()
 	if err != nil {
 		return err
 	}
 
 	req = req.WithContext(a.ctx)
-	for k, v := range a.oAuthParams() {
+	for k, v := range a.signer.OAuthParams(a.token.Token) {
 		req.Header.Set(k, v)
 	}
 
-	httpResp, err := client.Do(req, resp, apiError.ErrorDetail())
+	httpResp, err := cl.Do(req, resp, apiError.ErrorDetail())
 	if httpResp != nil {
 		if code := httpResp.StatusCode; code >= 300 {
 			apiError.SetStatus(httpResp.StatusCode)
@@ -80,20 +106,11 @@ func (a *OAuth2) Get(path string, resp interface{}, apiError social.ApiErrors, p
 	return social.RelevantError(err, apiError)
 }
 
-func (a *OAuth2) oAuthParams() map[string]string {
-	header := []string{a.AuthorizationPrefix, a.token.Token}
-
-	return map[string]string{
-		AuthorizationHeaderName: strings.Join(header, ""),
-		ContentTypeHeaderName:   "application/json",
-	}
-}
-
 func (a *OAuth2) RefreshToken(refreshBase string, path string, resp interface{}, apiError social.ApiErrors) error {
-	// Using a new http client, so we don't mess up the base path for other requests.
+	// Using a new http cl, so we don't mess up the base path for other requests.
 	// Since some APIs use a different base path for refreshing tokens, like reddit
-	client := a.client.New().Base(refreshBase).Post(path)
-	req, err := client.Request()
+	cl := a.client.New().Base(refreshBase).Post(path)
+	req, err := cl.Request()
 	if err != nil {
 		return err
 	}
@@ -103,25 +120,26 @@ func (a *OAuth2) RefreshToken(refreshBase string, path string, resp interface{},
 		return err
 	}
 
-	httpResp, err := client.Do(req, resp, apiError.ErrorDetail())
+	httpResp, err := cl.Do(req, resp, apiError.ErrorDetail())
 	if httpResp != nil {
 		if code := httpResp.StatusCode; code >= 300 {
 			apiError.SetStatus(httpResp.StatusCode)
 		}
 	}
+
 	return social.RelevantError(err, apiError)
 }
 
 func (a *OAuth2) RevokeToken(revokeBase string, path string, resp interface{}, apiError social.ApiErrors) error {
-	client := a.client.New().Base(revokeBase).Post(path)
-	req, err := client.Request()
+	cl := a.client.New().Base(revokeBase).Post(path)
+	req, err := cl.Request()
 	if err != nil {
 		return err
 	}
 
 	req = req.WithContext(a.ctx)
 
-	httpResp, err := client.Do(req, resp, apiError.ErrorDetail())
+	httpResp, err := cl.Do(req, resp, apiError.ErrorDetail())
 	if httpResp != nil {
 		if code := httpResp.StatusCode; code >= 300 {
 			apiError.SetStatus(httpResp.StatusCode)
@@ -141,7 +159,7 @@ func (a *OAuth2) signRequest(req *http.Request) (*http.Request, error) {
 
 	req.Body = ioutil.NopCloser(strings.NewReader(data.Encode()))
 
-	for k, v := range a.oAuthSigningParams() {
+	for k, v := range a.signer.AuthSigningParams() {
 		req.Header.Set(k, v)
 	}
 
@@ -150,7 +168,7 @@ func (a *OAuth2) signRequest(req *http.Request) (*http.Request, error) {
 	return req, nil
 }
 
-func (a *OAuth2) Client() *social.HttpClient {
+func (a *OAuth2) Client() *client.HttpClient {
 	return a.client
 }
 
@@ -164,17 +182,4 @@ func (a *OAuth2) UpdateToken(token *Token) {
 
 func (a *OAuth2) Credentials() oauth.Credentials {
 	return *a.credentials
-}
-
-// oauthParams returns the OAuth2 header parameters for the given credentials
-// See https://tools.ietf.org/html/rfc6749
-func (a *OAuth2) oAuthSigningParams() map[string]string {
-	return map[string]string{
-		AuthorizationHeaderName: a.authorizationHeaderValue(),
-		ContentTypeHeaderName:   "application/x-www-form-urlencoded",
-	}
-}
-
-func (a *OAuth2) authorizationHeaderValue() string {
-	return BasicAuthorizationPrefix + base64Enc(fmt.Sprintf("%s:%s", a.credentials.ConsumerKey, a.credentials.ConsumerSecret))
 }

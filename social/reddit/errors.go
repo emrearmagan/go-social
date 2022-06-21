@@ -14,7 +14,12 @@ import (
 // APIError represents a Reddit API error with its corresponding http StatusCode response
 type APIError struct {
 	StatusCode int
-	Errors     interface{}
+	Errors     ErrorDetail
+}
+
+type ErrorDetail struct {
+	Message string `json:"message"`
+	Error   int    `json:"error"`
 }
 
 func (e *APIError) ErrorDetail() interface{} {
@@ -22,12 +27,15 @@ func (e *APIError) ErrorDetail() interface{} {
 }
 
 func (e *APIError) Error() string {
+	if (e.Errors != ErrorDetail{}) {
+		return fmt.Sprintf("Reddit: %d - %v : %v", e.StatusCode, e.Errors.Error, e.Errors.Message)
+	}
 	return fmt.Sprintf("Reddit: %d", e.StatusCode)
 }
 
 // Empty returns true if nil. Otherwise, at least 1 error message/code is
 func (e *APIError) Empty() bool {
-	return e.Errors == nil
+	return e.Errors == ErrorDetail{}
 }
 
 func (e *APIError) Status() int {
@@ -46,6 +54,8 @@ func (e *APIError) ReturnErrorResponse() error {
 		return errors.New(errors.ErrUnauthorized, e.Error())
 	case 429: // Rate limit exceeded	 - The request limit for this resource has been reached for the current rate limit window.
 		return errors.New(errors.ErrRateLimit, e.Error())
+	case 411:
+		return errors.New(errors.ErrBadRequest, e.Error())
 	case 500, 502, 503: //Internal api error
 		return errors.New(errors.ErrApiError, e.Error())
 	}

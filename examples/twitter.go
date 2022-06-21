@@ -8,29 +8,15 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
-	"github.com/emrearmagan/go-social/config"
+	"github.com/emrearmagan/go-social/oauth"
 	"github.com/emrearmagan/go-social/oauth/oauth1"
 	"github.com/emrearmagan/go-social/social/twitter"
 	"log"
 )
 
 func main() {
-	var ConfigPath string
-
-	// pass config file
-	flag.StringVar(&ConfigPath, "c", "./config/config_example.json", "Specified the config file for account credentials. Default is the \"config_example\" in the config directory.")
-	flag.Parse()
-
-	//load config
-	accounts, err := config.LoadConfig(ConfigPath)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	conf := oauth1.NewOAuth(context.TODO(), &accounts.Twitter.Credentials, &accounts.Twitter.Token)
-	client := twitter.NewClient(conf)
+	client := twitter.NewClient(context.TODO(), oauth.NewCredentials("xxxx", "xxxxx"), oauth1.NewToken("xxx", "xxx"))
 
 	u, err := client.User.UserCredentials(nil)
 	if err != nil {

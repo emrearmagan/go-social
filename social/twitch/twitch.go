@@ -7,8 +7,11 @@ Copyright © go-social. All rights reserved.
 package twitch
 
 import (
+	"context"
+	"github.com/emrearmagan/go-social/oauth"
 	"github.com/emrearmagan/go-social/oauth/oauth2"
 	"github.com/emrearmagan/go-social/social"
+	"github.com/emrearmagan/go-social/social/client"
 )
 
 type Client struct {
@@ -22,8 +25,7 @@ type Client struct {
 const (
 	APIBase = "https://api.twitch.tv/"
 
-	AuthorizationPrefix = "Bearer " // trailing space is required
-	ClientHeaderName    = "Client-Id"
+	ClientHeaderName = "Client-Id"
 
 	RefreshRevokeBase = "https://id.twitch.tv/"
 	RefreshPath       = "/oauth2/token"
@@ -31,19 +33,16 @@ const (
 )
 
 // NewClient returns a new Twitter Client.
-func NewClient(oauth *oauth2.OAuth2) *Client {
+func NewClient(ctx context.Context, c *oauth.Credentials, token *oauth2.Token) *Client {
 	// Twitch requires the client id to be in the header. At least for the endpoints implemented here
-	tclient := oauth.Client().Base(APIBase)
-	tclient.Add(ClientHeaderName, oauth.Credentials().ConsumerKey)
-
-	oauth = oauth.NewClient(tclient)
-	oauth.AuthorizationPrefix = AuthorizationPrefix
-
+	cl := client.NewHttpClient().Base(APIBase)
+	cl.Add(ClientHeaderName, c.ConsumerKey)
+	auther := oauth2.NewOAuth(ctx, c, token, cl)
 	return &Client{
-		oauth2:     oauth,
-		User:       newUserService(oauth),
-		Subscriber: newSubscriberService(oauth),
-		Follower:   newFollowerService(oauth),
+		oauth2:     auther,
+		User:       newUserService(auther),
+		Subscriber: newSubscriberService(auther),
+		Follower:   newFollowerService(auther),
 	}
 }
 

@@ -7,9 +7,12 @@ Copyright © go-social. All rights reserved.
 package twitter
 
 import (
+	"context"
 	"fmt"
 	"github.com/emrearmagan/go-social/models"
+	"github.com/emrearmagan/go-social/oauth"
 	"github.com/emrearmagan/go-social/oauth/oauth1"
+	"github.com/emrearmagan/go-social/social/client"
 )
 
 type Client struct {
@@ -22,11 +25,13 @@ const (
 )
 
 // NewClient returns a new Twitter Client.
-func NewClient(oauth *oauth1.OAuth1) *Client {
-	oauth = oauth.NewClient(oauth.Client().Base(Base))
+func NewClient(ctx context.Context, c *oauth.Credentials, token *oauth1.Token) *Client {
+	cl := client.NewHttpClient().Base(Base)
+	auther := oauth1.NewOAuth(ctx, c, token, cl)
+
 	return &Client{
-		User:     newUserService(oauth),
-		Follower: newFollowerService(oauth),
+		User:     newUserService(auther),
+		Follower: newFollowerService(auther),
 	}
 }
 

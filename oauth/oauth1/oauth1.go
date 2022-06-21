@@ -13,6 +13,7 @@ import (
 	"github.com/emrearmagan/go-social/models/errors"
 	"github.com/emrearmagan/go-social/oauth"
 	"github.com/emrearmagan/go-social/social"
+	"github.com/emrearmagan/go-social/social/client"
 	"net/http"
 	"sort"
 	"strconv"
@@ -41,21 +42,21 @@ type OAuth1 struct {
 	ctx         context.Context
 	credentials *oauth.Credentials
 	token       *Token
-	client      *social.HttpClient
+	client      *client.HttpClient
 	// OAuth1 signer (defaults is HMAC-SHA1)
 	signer Signer
 }
 
-func NewOAuth(ctx context.Context, c *oauth.Credentials, token *Token) *OAuth1 {
+func NewOAuth(ctx context.Context, c *oauth.Credentials, token *Token, cl *client.HttpClient) *OAuth1 {
 	return &OAuth1{
 		ctx:         ctx,
 		credentials: c,
 		token:       token,
-		client:      social.NewHttpClient(),
+		client:      cl,
 	}
 }
 
-func (a *OAuth1) NewClient(client *social.HttpClient) *OAuth1 {
+func (a *OAuth1) NewClient(client *client.HttpClient) *OAuth1 {
 	return &OAuth1{
 		ctx:         a.ctx,
 		credentials: a.credentials,
@@ -107,7 +108,7 @@ func (a *OAuth1) oAuthParams(req *http.Request) map[string]string {
 	return params
 }
 
-func (a *OAuth1) Client() *social.HttpClient {
+func (a *OAuth1) Client() *client.HttpClient {
 	return a.client
 }
 
@@ -179,9 +180,6 @@ func baseURI(req *http.Request) string {
 		path = req.URL.EscapedPath()
 	}
 
-	//query := req.URL.RawQuery
-	//println(fmt.Sprintf("%v://%v%v?%v", scheme, host, path, query))
-	//return fmt.Sprintf("%v://%v%v?%v", scheme, host, path, query)
 	return fmt.Sprintf("%v://%v%v", scheme, host, path)
 }
 

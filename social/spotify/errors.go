@@ -95,10 +95,7 @@ func (e *RefreshError) Error() string {
 // Empty returns true if empty. Otherwise, at least 1 error message/code is
 // present and false is returned.
 func (e *RefreshError) Empty() bool {
-	if (e.Errors == RefreshDetail{}) {
-		return true
-	}
-	return false
+	return e.Errors == RefreshDetail{}
 }
 
 func (e *RefreshError) Status() int {

@@ -7,8 +7,11 @@ Copyright © go-social. All rights reserved.
 package tumblr
 
 import (
+	"context"
 	"github.com/emrearmagan/go-social/models"
+	"github.com/emrearmagan/go-social/oauth"
 	"github.com/emrearmagan/go-social/oauth/oauth1"
+	"github.com/emrearmagan/go-social/social/client"
 )
 
 const (
@@ -20,10 +23,11 @@ type Client struct {
 }
 
 // NewClient returns a new Spotify Client.
-func NewClient(oauth *oauth1.OAuth1) *Client {
-	oauth = oauth.NewClient(oauth.Client().Base(Base))
+func NewClient(ctx context.Context, c *oauth.Credentials, token *oauth1.Token) *Client {
+	cl := client.NewHttpClient().Base(Base)
+	auther := oauth1.NewOAuth(ctx, c, token, cl)
 	return &Client{
-		User: newUserService(oauth),
+		User: newUserService(auther),
 	}
 }
 

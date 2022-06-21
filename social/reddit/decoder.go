@@ -21,6 +21,10 @@ func (r redditDecoder) Decode(resp *http.Response, v interface{}) error {
 		return json.NewDecoder(resp.Body).Decode(v)
 	}
 
-	// Else decode some json so that the ErrorDetail != nil
-	return json.Unmarshal([]byte(`{"Reddit": "Failed request"}`), v)
+	if err := json.NewDecoder(resp.Body).Decode(v); err != nil {
+		// Else decode some json so that the ErrorDetail != nil
+		return json.Unmarshal([]byte(`{"Reddit": "Failed request"}`), v)
+	}
+
+	return nil
 }

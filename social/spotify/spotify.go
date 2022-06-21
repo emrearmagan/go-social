@@ -7,15 +7,17 @@ Copyright © go-social. All rights reserved.
 package spotify
 
 import (
+	"context"
 	"github.com/emrearmagan/go-social/models"
+	"github.com/emrearmagan/go-social/oauth"
 	"github.com/emrearmagan/go-social/oauth/oauth2"
 	"github.com/emrearmagan/go-social/social"
+	"github.com/emrearmagan/go-social/social/client"
 	"strings"
 )
 
 const (
-	Base                = "https://api.spotify.com/"
-	AuthorizationPrefix = "Bearer " // trailing space is required
+	Base = "https://api.spotify.com/"
 
 	RefreshBase = "https://accounts.spotify.com"
 	RefreshPath = "/api/token/"
@@ -30,14 +32,15 @@ type Client struct {
 }
 
 // NewClient returns a new Spotify Client.
-func NewClient(oauth *oauth2.OAuth2) *Client {
-	oauth = oauth.NewClient(oauth.Client().Base(Base))
-	oauth.AuthorizationPrefix = AuthorizationPrefix
+func NewClient(ctx context.Context, c *oauth.Credentials, token *oauth2.Token) *Client {
+	cl := client.NewHttpClient().Base(Base)
+	auther := oauth2.NewOAuth(ctx, c, token, cl)
+
 	return &Client{
-		oauth2:   oauth,
-		User:     newUserService(oauth),
-		Playlist: newPlaylistService(oauth),
-		Follower: newFollowerService(oauth),
+		oauth2:   auther,
+		User:     newUserService(auther),
+		Playlist: newPlaylistService(auther),
+		Follower: newFollowerService(auther),
 	}
 }
 
@@ -48,7 +51,9 @@ func (c *Client) RefreshToken() (*oauth2.OAuthRefreshResponse, error) {
 	oauthResp := new(OAuth2Response)
 	apiError := new(RefreshError)
 
-	err := c.oauth2.RefreshToken(RefreshBase, RefreshPath, oauthResp, apiError)
+	// Spotify requires the basic authentication for refreshing a token, but the bearer authentication for everything else. Yes I don't get it either
+	a := c.oauth2.New().Basic()
+	err := a.RefreshToken(RefreshBase, RefreshPath, oauthResp, apiError)
 	c.oauth2.UpdateToken(oauth2.NewToken(oauthResp.AccessToken, c.oauth2.Token().RefreshToken))
 	return &oauth2.OAuthRefreshResponse{
 		Token: oauth2.Token{

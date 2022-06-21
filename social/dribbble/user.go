@@ -22,9 +22,9 @@ type UserService struct {
 }
 
 // newUserService returns a new Github UserService.
-func newUserService(oauth2 *oauth2.OAuth2) *UserService {
+func newUserService(auther *oauth2.OAuth2) *UserService {
 	return &UserService{
-		oauth2: oauth2,
+		oauth2: auther,
 	}
 }
 
