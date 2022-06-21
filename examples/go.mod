@@ -6,4 +6,4 @@ require (
 	github.com/emrearmagan/go-social v0.0.0-20220619211253-df7bd81f6dd7
 )
 
-replace github.com/emrearmagan/go-social => /Users/emrearmagan/development/go/src/go-social
+
