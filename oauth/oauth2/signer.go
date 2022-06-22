@@ -21,8 +21,8 @@ type Signer interface {
 }
 
 const (
-	BasicAuthorizationPrefix  = "Basic"
-	BearerAuthorizationPrefix = "Bearer"
+	BasicAuthorizationPrefix  = "Basic "  // trailing space is required
+	BearerAuthorizationPrefix = "Bearer " // trailing space is required
 	AuthorizationHeaderName   = "Authorization"
 	ContentLengthHeaderName   = "Content-Length"
 	ContentTypeHeaderName     = "Content-Type"
@@ -47,7 +47,6 @@ func (b BasicSigner) AuthSigningParams() map[string]string {
 
 func (b BasicSigner) OAuthParams(token string) map[string]string {
 	header := []string{BasicAuthorizationPrefix, token}
-
 	return map[string]string{
 		AuthorizationHeaderName: strings.Join(header, ""),
 		ContentTypeHeaderName:   "application/json",
@@ -72,7 +71,7 @@ func (b BearerSigner) OAuthParams(token string) map[string]string {
 	header := []string{BearerAuthorizationPrefix, token}
 
 	return map[string]string{
-		AuthorizationHeaderName: strings.Join(header, " "), // trailing space is required
+		AuthorizationHeaderName: strings.Join(header, ""),
 		ContentTypeHeaderName:   "application/json",
 	}
 }

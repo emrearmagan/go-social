@@ -77,7 +77,7 @@ func (g *Client) GoSocialUser() (*models.SocialUser, error) {
 // AuthorizationPrefix
 // GitHub recommends sending OAuth tokens using the Authorization header.
 // Read more about here: https://docs.github.com/en/rest/overview/resources-in-the-rest-api#oauth2-token-sent-in-a-header
-const AuthorizationPrefix = "token"
+const AuthorizationPrefix = "token " // trailing space is required
 
 // A GithubSigner signs request with an basic header prefix
 type GithubSigner struct {
@@ -97,10 +97,10 @@ func (b GithubSigner) AuthSigningParams() map[string]string {
 }
 
 func (b GithubSigner) OAuthParams(token string) map[string]string {
-	header := []string{"token ", token}
+	header := []string{AuthorizationPrefix, token}
 
 	return map[string]string{
-		"Authorization": strings.Join(header, " "), //trailing space required
+		"Authorization": strings.Join(header, ""),
 		"Content-Type":  "application/json",
 	}
 }
