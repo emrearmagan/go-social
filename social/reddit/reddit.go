@@ -36,7 +36,7 @@ type Client struct {
 func NewClient(ctx context.Context, c *oauth.Credentials, token *oauth2.Token, userAgent string) *Client {
 	cl := client.NewHttpClient().Base(Base).Decoder(redditDecoder{})
 	cl.Set(UserAgentHeaderKey, userAgent)
-	auther := oauth2.NewOAuth(ctx, c, token, cl).Basic()
+	auther := oauth2.NewOAuth(ctx, c, token, cl)
 
 	return &Client{
 		oauth2: auther,
@@ -51,7 +51,9 @@ func (c *Client) RefreshToken() (*oauth2.OAuthRefreshResponse, error) {
 	oauthResp := new(OAuth2RefreshResponse)
 	apiError := new(APIError)
 
-	err := c.oauth2.RefreshToken(RefreshBase, RefreshPath, oauthResp, apiError)
+	// Requires basic authentication for refreshing the token even tho the response is bearer....
+	a := c.oauth2.Basic()
+	err := a.RefreshToken(RefreshBase, RefreshPath, oauthResp, apiError)
 	if err == nil {
 		c.oauth2.UpdateToken(oauth2.NewToken(oauthResp.AccessToken, oauthResp.RefreshToken))
 	}

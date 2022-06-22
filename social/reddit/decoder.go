@@ -8,6 +8,7 @@ package reddit
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -23,7 +24,8 @@ func (r redditDecoder) Decode(resp *http.Response, v interface{}) error {
 
 	if err := json.NewDecoder(resp.Body).Decode(v); err != nil {
 		// Else decode some json so that the ErrorDetail != nil
-		return json.Unmarshal([]byte(`{"Reddit": "Failed request"}`), v)
+		e := fmt.Sprintf(`{"Message": "%s", "error": %d}`, "Failed request", resp.StatusCode)
+		return json.Unmarshal([]byte(e), v)
 	}
 
 	return nil

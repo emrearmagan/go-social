@@ -13,6 +13,7 @@ import (
 
 // A Signer signs request to create a signed 0Auth2 request
 type Signer interface {
+	Name() string
 	// AuthSigningParams returns the OAuth2 header parameters for the given credentials
 	// See https://tools.ietf.org/html/rfc6749
 	AuthSigningParams() map[string]string
@@ -20,8 +21,8 @@ type Signer interface {
 }
 
 const (
-	BasicAuthorizationPrefix  = "Basic "  // trailing space is required
-	BearerAuthorizationPrefix = "Bearer " // trailing space is required
+	BasicAuthorizationPrefix  = "Basic"
+	BearerAuthorizationPrefix = "Bearer"
 	AuthorizationHeaderName   = "Authorization"
 	ContentLengthHeaderName   = "Content-Length"
 	ContentTypeHeaderName     = "Content-Type"
@@ -31,6 +32,10 @@ const (
 type BasicSigner struct {
 	ConsumerKey    string
 	ConsumerSecret string
+}
+
+func (b BasicSigner) Name() string {
+	return BasicAuthorizationPrefix
 }
 
 func (b BasicSigner) AuthSigningParams() map[string]string {
@@ -59,11 +64,15 @@ type BearerSigner struct {
 	ConsumerSecret string
 }
 
+func (b BearerSigner) Name() string {
+	return BearerAuthorizationPrefix
+}
+
 func (b BearerSigner) OAuthParams(token string) map[string]string {
 	header := []string{BearerAuthorizationPrefix, token}
 
 	return map[string]string{
-		AuthorizationHeaderName: strings.Join(header, ""),
+		AuthorizationHeaderName: strings.Join(header, " "), // trailing space is required
 		ContentTypeHeaderName:   "application/json",
 	}
 }

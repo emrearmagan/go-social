@@ -168,6 +168,10 @@ func (a *OAuth2) signRequest(req *http.Request) (*http.Request, error) {
 	return req, nil
 }
 
+func (a *OAuth2) AuthorizationType() string {
+	return a.signer.Name()
+}
+
 func (a *OAuth2) Client() *client.HttpClient {
 	return a.client
 }
