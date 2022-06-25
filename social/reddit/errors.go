@@ -54,7 +54,7 @@ func (e *APIError) ReturnErrorResponse() error {
 		return errors.New(errors.ErrUnauthorized, e.Error())
 	case 429: // Rate limit exceeded	 - The request limit for this resource has been reached for the current rate limit window.
 		return errors.New(errors.ErrRateLimit, e.Error())
-	case 411:
+	case 400, 411:
 		return errors.New(errors.ErrBadRequest, e.Error())
 	case 500, 502, 503: //Internal api error
 		return errors.New(errors.ErrApiError, e.Error())
