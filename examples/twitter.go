@@ -16,7 +16,8 @@ import (
 )
 
 func main() {
-	client := twitter.NewClient(context.TODO(), oauth.NewCredentials("xxxx", "xxxxx"), oauth1.NewToken("xxx", "xxx"))
+	auther := oauth1.NewOAuth(context.TODO(), oauth.NewCredentials("xxxx", "xxxxx"), oauth1.NewToken("xxx", "xxx"))
+	client := twitter.NewClient(auther)
 
 	u, err := client.User.UserCredentials(nil)
 	if err != nil {
